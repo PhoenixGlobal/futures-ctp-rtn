@@ -1,10 +1,11 @@
-from time import sleep
+import sys
 import logging
 import socket
+from time import sleep
 from contextlib import closing
-import _env as env
-import sys
-from trader import Trader
+
+from . import _env as env
+from .trader import Trader
 
 logging.basicConfig(level=logging.INFO)
 

@@ -1,6 +1,6 @@
 import logging
-import _env as env
 from ctpwrapper import ApiStructure, TraderApiPy
+from . import _env as env
 
 class Trader(TraderApiPy):
 	def __init__(self, request_id):
