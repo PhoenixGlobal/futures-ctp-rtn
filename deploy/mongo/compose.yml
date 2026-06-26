@@ -1,6 +1,6 @@
 services:
   mongo:
-    image: mongo:latest
+    image: mongo:8
     container_name: futures-ctp-rtn--mongodb
     restart: always
     ports:
