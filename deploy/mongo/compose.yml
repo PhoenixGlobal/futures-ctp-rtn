@@ -1,0 +1,9 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: futures-ctp-rtn--mongodb
+    ports:
+      - "10001:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: 123456
