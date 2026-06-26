@@ -1,1 +1,7 @@
-.venv
+.venv/
+_env.py
+__pycache__/
+DialogRsp.con
+Private.con
+QueryRsp.con
+TradingDay.con
