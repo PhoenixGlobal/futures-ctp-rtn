@@ -6,7 +6,7 @@ class Trader(TraderApiPy):
 	def __init__(self, request_id):
 		self.login = False
 		self.request_id = request_id
-	
+
 	def _next_request_id(self):
 		id = self.request_id
 		self.request_id += 1
