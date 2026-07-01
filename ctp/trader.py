@@ -1,13 +1,13 @@
 import logging
 from ctpwrapper import ApiStructure, TraderApiPy
-from . import _env as env
+import env
 
-class Trader(TraderApiPy):
-	def __init__(self, request_id):
+class _Trader(TraderApiPy):
+	def __init__(self):
 		self.login = False
-		self.request_id = request_id
+		self.request_id = 1
 
-	def _next_request_id(self):
+	def req_id(self):
 		id = self.request_id
 		self.request_id += 1
 		return id
@@ -25,7 +25,7 @@ class Trader(TraderApiPy):
 		logging.info(f'OnHeartBeatWarning time: {nTimeLapse}')
 
 	def OnFrontDisconnected(self, nReason):
-		logging.info('FrontDisconnected:', nReason)
+		logging.error('FrontDisconnected:', nReason)
 
 	def OnFrontConnected(self):
 		logging.info('FrontConnected')
@@ -35,7 +35,7 @@ class Trader(TraderApiPy):
 			AppID=env.app_id,
 			AuthCode=env.auth_code,
 		)
-		self.ReqAuthenticate(req, self._next_request_id())
+		self.ReqAuthenticate(req, self.req_id())
 
 	def OnRspAuthenticate(self, pRspAuthenticateField, pRspInfo, nRequestID, bIsLast):
 		logging.info('OnRspAuthenticate')
@@ -50,7 +50,7 @@ class Trader(TraderApiPy):
 				UserID = env.investor,
 				Password = env.password,
 			)
-			self.ReqUserLogin(req, self._next_request_id())
+			self.ReqUserLogin(req, self.req_id())
 		else:
 			logging.error('auth failed')
 
@@ -66,3 +66,18 @@ class Trader(TraderApiPy):
 			logging.info('trader user login successfully')
 			self.login = True
 			logging.info(f'pRspUserLogin: {pRspUserLogin}')
+
+class Trader(_Trader):
+	# 期货公司响应
+	def OnRspOrderInsert(self, pInputOrder, pRspInfo, nRequestID, bIsLast):
+		pass
+
+	# 订单实时状态推送
+	def OnRtnOrder(self, pOrder):
+		logging.info(pOrder)
+	
+	# 报单插入错误（交易所）
+	def OnErrRtnOrderInsert(self, pInputOrder, pRspInfo):
+		logging.error('order insert failed')
+		logging.error(pInputOrder)
+		logging.error(pRspInfo)
