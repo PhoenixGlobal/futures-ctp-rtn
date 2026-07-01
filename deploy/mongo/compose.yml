@@ -1,7 +1,7 @@
 services:
   mongo:
     image: mongo:8
-    container_name: futures-ctp-rtn--mongodb
+    container_name: futures-trader
     restart: always
     ports:
       - "10001:27017"
@@ -9,7 +9,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: 123456
     volumes:
-      - futures-ctp-rtn:/data/db
+      - futures-trader:/data/db
 
 volumes:
-  futures-ctp-rtn:
+  futures-trader:
