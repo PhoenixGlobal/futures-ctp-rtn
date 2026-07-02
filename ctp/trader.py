@@ -1,11 +1,13 @@
 import logging
+from typing import Callable
 from ctpwrapper import ApiStructure, TraderApiPy
 import env
+from . import _
 
-class _Trader(TraderApiPy):
-	def __init__(self):
-		self.login = False
-		self.request_id = 1
+class BaseTrader(TraderApiPy):
+	def __init__(self, on_login: Callable[[BaseTrader], None]):
+		self.request_id = _.req_id_start()
+		self.on_login = on_login
 
 	def req_id(self):
 		id = self.request_id
@@ -64,10 +66,10 @@ class _Trader(TraderApiPy):
 			logging.error('login failed')
 		else:
 			logging.info('trader user login successfully')
-			self.login = True
 			logging.info(f'pRspUserLogin: {pRspUserLogin}')
+			self.on_login(self)
 
-class Trader(_Trader):
+class Trader(BaseTrader):
 	# 期货公司响应
 	def OnRspOrderInsert(self, pInputOrder, pRspInfo, nRequestID, bIsLast):
 		pass

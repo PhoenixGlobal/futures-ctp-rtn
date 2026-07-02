@@ -1,11 +1,26 @@
 import logging
-from ctp.trader import Trader
+from ctp.trader import BaseTrader
 from ctpwrapper import ApiStructure
 import env
+from . import _
+
+class SettlementTrader(BaseTrader):
+	def OnRspSettlementInfoConfirm(self, pSettlementInfoConfirm, pRspInfo, nRequestID, bIsLast):
+		logging.info(f'settlement info confirmed:')
+		logging.info(pSettlementInfoConfirm)
+		logging.info(pRspInfo)
+	def OnRspQrySettlementInfo(self, pSettlementInfo, pRspInfo, nRequestID, bIsLast):
+		logging.info(f'settlement info:')
+		logging.info(pSettlementInfo)
+		logging.info(pRspInfo)
+	def OnRspQrySettlementInfoConfirm(self, pSettlementInfoConfirm, pRspInfo, nRequestID, bIsLast):
+		logging.info(f'settlement confirm info:')
+		logging.info(pSettlementInfoConfirm)
+		logging.info(pRspInfo)
 
 def main():
 	logging.basicConfig(level=logging.INFO)
-	trader = Trader()
+	trader = SettlementTrader(on_login)
 	trader.Create()
 	ip, port = env.trader_server
 	logging.info(f'registering front: {ip}:{port}')
@@ -16,11 +31,9 @@ def main():
 	)
 	trader.Init()
 	logging.info(f'trading day: {trader.GetTradingDay()}')
+	_.hold()
 
-	if trader.login == False:
-		logging.error('trader login failed')
-		return
-
+def on_login(trader: SettlementTrader):
 	logging.info('futures-trader ONLINE')
 
 	settlement = ApiStructure.SettlementInfoConfirmField(
@@ -29,7 +42,6 @@ def main():
 	)
 	logging.info('confirming settlement')
 	ret = trader.ReqSettlementInfoConfirm(settlement, trader.req_id())
-	if ret != 1:
-		logging.error(f'settlement failed: {ret}')
+	logging.error(f'settlement ret: {ret}')
 
 main()

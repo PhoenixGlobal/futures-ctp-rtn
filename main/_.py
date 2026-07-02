@@ -5,7 +5,7 @@ import sys
 def hold():
 	try:
 		while True:
-			sleep(1)
+			sleep(60)
 	except KeyboardInterrupt:
 		logging.error('KeyboardInterrupt')
 		sys.exit('KeyboardInterrupt')
