@@ -83,3 +83,7 @@ class Trader(BaseTrader):
 		logging.error('order insert failed')
 		logging.error(pInputOrder)
 		logging.error(pRspInfo)
+
+	# 成交
+	def OnRtnTrade(self, pTrade) -> None:
+		pass
