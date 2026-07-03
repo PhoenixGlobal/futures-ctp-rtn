@@ -9,3 +9,6 @@ dependencies = [
     "fastapi[standard]>=0.139.0",
     "pymongo>=4.17.0",
 ]
+
+[tool.fastapi]
+entrypoint = "trader:app"

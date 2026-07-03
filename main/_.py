@@ -15,7 +15,7 @@ def hold():
 
 def main(Trader: BaseTrader, on_login: Callable[[BaseTrader], None], _hold: bool):
 	logging.basicConfig(level=logging.INFO)
-	trader = Trader(on_login)
+	trader = Trader(on_login = on_login)
 	trader.Create()
 	ip, port = env.trader_server
 	logging.info(f'registering front: {ip}:{port}')

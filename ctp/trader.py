@@ -1,11 +1,19 @@
 import logging
-from typing import Callable
+from typing import Callable, Optional
 from ctpwrapper import ApiStructure, TraderApiPy
 import env
 from . import _
 
 class BaseTrader(TraderApiPy):
-	def __init__(self, on_login: Callable[[BaseTrader], None]):
+	def __init__(self, *,
+		on_login: Callable[[BaseTrader], None],
+		logger: Optional[str] = None,
+	):
+		if logger is None:
+			self.log = logging
+		else:
+			self.log = logging.getLogger(logger)
+
 		self.request_id = _.req_id_start()
 		self.on_login = on_login
 
@@ -15,22 +23,22 @@ class BaseTrader(TraderApiPy):
 		return id
 
 	def OnRspError(self, pRspInfo, nRequestID, bIsLast):
-		logging.info('OnRspError:')
-		logging.info(f'requestID: {nRequestID}')
-		logging.info(pRspInfo)
-		logging.info(bIsLast)
+		self.log.info('OnRspError:')
+		self.log.info(f'requestID: {nRequestID}')
+		self.log.info(pRspInfo)
+		self.log.info(bIsLast)
 
 	def OnHeartBeatWarning(self, nTimeLapse):
 		"""心跳超时警告。当长时间未收到报文时，该方法被调用。
 		@param nTimeLapse 距离上次接收报文的时间
 		"""
-		logging.info(f'OnHeartBeatWarning time: {nTimeLapse}')
+		self.log.info(f'OnHeartBeatWarning time: {nTimeLapse}')
 
 	def OnFrontDisconnected(self, nReason):
-		logging.error('FrontDisconnected:', nReason)
+		self.log.error('FrontDisconnected:', nReason)
 
 	def OnFrontConnected(self):
-		logging.info('FrontConnected')
+		self.log.info('FrontConnected')
 		req = ApiStructure.ReqAuthenticateField(
 			BrokerID=env.broker,
 			UserID=env.investor,
@@ -40,13 +48,13 @@ class BaseTrader(TraderApiPy):
 		self.ReqAuthenticate(req, self.req_id())
 
 	def OnRspAuthenticate(self, pRspAuthenticateField, pRspInfo, nRequestID, bIsLast):
-		logging.info('OnRspAuthenticate')
-		logging.info(f'pRspInfo: {pRspInfo}')
-		logging.info(f'nRequestID: {nRequestID}')
-		logging.info(f'bIsLast: {bIsLast}')
+		self.log.info('OnRspAuthenticate')
+		self.log.info(f'pRspInfo: {pRspInfo}')
+		self.log.info(f'nRequestID: {nRequestID}')
+		self.log.info(f'bIsLast: {bIsLast}')
 
 		if pRspInfo.ErrorID == 0:
-			logging.info('auth success')
+			self.log.info('auth success')
 			req = ApiStructure.ReqUserLoginField(
 				BrokerID = env.broker,
 				UserID = env.investor,
@@ -54,19 +62,19 @@ class BaseTrader(TraderApiPy):
 			)
 			self.ReqUserLogin(req, self.req_id())
 		else:
-			logging.error('auth failed')
+			self.log.error('auth failed')
 
 	def OnRspUserLogin(self, pRspUserLogin, pRspInfo, nRequestID, bIsLast):
-		logging.info('OnRspUserLogin')
-		logging.info(f'nRequestID: {nRequestID}')
-		logging.info(f'bIsLast: {bIsLast}')
-		logging.info(f'pRspInfo: {pRspInfo}')
+		self.log.info('OnRspUserLogin')
+		self.log.info(f'nRequestID: {nRequestID}')
+		self.log.info(f'bIsLast: {bIsLast}')
+		self.log.info(f'pRspInfo: {pRspInfo}')
 
 		if pRspInfo.ErrorID != 0:
-			logging.error('login failed')
+			self.log.error('login failed')
 		else:
-			logging.info('trader user login successfully')
-			logging.info(f'pRspUserLogin: {pRspUserLogin}')
+			self.log.info('trader user login successfully')
+			self.log.info(f'pRspUserLogin: {pRspUserLogin}')
 			self.on_login(self)
 
 class Trader(BaseTrader):
@@ -76,13 +84,13 @@ class Trader(BaseTrader):
 
 	# 订单实时状态推送
 	def OnRtnOrder(self, pOrder):
-		logging.info(pOrder)
+		self.log.info(pOrder)
 	
 	# 报单插入错误（交易所）
 	def OnErrRtnOrderInsert(self, pInputOrder, pRspInfo):
-		logging.error('order insert failed')
-		logging.error(pInputOrder)
-		logging.error(pRspInfo)
+		self.log.error('order insert failed')
+		self.log.error(pInputOrder)
+		self.log.error(pRspInfo)
 
 	# 成交
 	def OnRtnTrade(self, pTrade) -> None:
