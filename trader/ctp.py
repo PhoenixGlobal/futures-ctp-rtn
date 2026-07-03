@@ -1,20 +1,22 @@
 from ctpwrapper import ApiStructure
 from ctp.trader import BaseTrader
+import util
+from .db import db
 
 class Trader(BaseTrader):
 	# 期货公司响应
 	def OnRspOrderInsert(self, pInputOrder, pRspInfo, nRequestID, bIsLast):
 		self.log.info('OnRspOrderInsert')
-		self.log.info(pInputOrder)
-		self.log.info(pRspInfo)
 		self.log.info(nRequestID)
-		self.log.info(bIsLast)
-		pass
 
 	# 订单实时状态推送
-	def OnRtnOrder(self, pOrder):
-		self.log.info('OnRtnOrder')
-		self.log.info(pOrder)
+	def OnRtnOrder(self, pOrder: ApiStructure.OrderField):
+		self.log.info(f'OnRtnOrder (req_id: {pOrder.RequestID})')
+		db['RtnOrder'].insert_one({
+			'data': pOrder.to_dict(),
+			'timestamp': util.now(),
+		})
+		self.log.info(f'RtnOrder (req_id: {pOrder.RequestID}) saved')
 
 	# 报单插入错误（交易所）
 	def OnErrRtnOrderInsert(self, pInputOrder, pRspInfo):

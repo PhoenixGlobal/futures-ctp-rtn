@@ -4,7 +4,11 @@ import env
 from . import _
 
 def place_order(trader: Trader):
+	req_id = trader.req_id()
 	order = ApiStructure.InputOrderField(
+		OrderRef = 'tensor-test',
+		RequestID = req_id,
+
 		BrokerID = env.broker,
 		InvestorID = env.investor,
 		UserID = env.investor,
@@ -23,7 +27,7 @@ def place_order(trader: Trader):
 		ExchangeID = 'SHFE',
 		InstrumentID = 'au2608',
 	)
-	ret = trader.ReqOrderInsert(order, trader.req_id())
+	ret = trader.ReqOrderInsert(order, req_id)
 	trader.log.info(f'下单: {ret}')
 
 _.main(Trader, place_order, True)
