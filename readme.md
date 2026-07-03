@@ -1,5 +1,12 @@
 # 期货交易 - Trader
 
+``` bash
+source .venv/bin/activate
+fastapi dev # development
+# fastapi run --host 127.0.0.1 # production (生产环境仅允许本地访问)
+```
+
+## what, why
 职责：报单、记录
 
 + 功能尽量少

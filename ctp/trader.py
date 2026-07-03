@@ -76,22 +76,3 @@ class BaseTrader(TraderApiPy):
 			self.log.info('trader user login successfully')
 			self.log.info(f'pRspUserLogin: {pRspUserLogin}')
 			self.on_login(self)
-
-class Trader(BaseTrader):
-	# 期货公司响应
-	def OnRspOrderInsert(self, pInputOrder, pRspInfo, nRequestID, bIsLast):
-		pass
-
-	# 订单实时状态推送
-	def OnRtnOrder(self, pOrder):
-		self.log.info(pOrder)
-	
-	# 报单插入错误（交易所）
-	def OnErrRtnOrderInsert(self, pInputOrder, pRspInfo):
-		self.log.error('order insert failed')
-		self.log.error(pInputOrder)
-		self.log.error(pRspInfo)
-
-	# 成交
-	def OnRtnTrade(self, pTrade) -> None:
-		pass
