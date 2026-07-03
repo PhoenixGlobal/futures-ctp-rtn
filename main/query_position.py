@@ -10,6 +10,7 @@ class QPTrader(BaseTrader):
 		logging.info('当前仓位')
 		logging.info(pInvestorPosition)
 		logging.info(pRspInfo)
+		logging.info(f'bIsLast: {bIsLast}')
 
 def trading_day(day: str):
 	return datetime.strptime(day, '%Y%m%d').timestamp()
