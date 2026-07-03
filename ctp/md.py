@@ -1,13 +1,11 @@
 import sys
+from typing import Callable
 from ctpwrapper import ApiStructure, MdApiPy
+import env
 
 class MD(MdApiPy):
-	def __init__(self, broker_id, investor_id, password, request_id):
-		self.login = False
-		self.broker_id = broker_id
-		self.investor_id = investor_id
-		self.password = password
-		self._request_id = request_id
+	def __init__(self):
+		self._request_id = 1
 
 	@property
 	def request_id(self):
@@ -21,7 +19,11 @@ class MD(MdApiPy):
 		print(bIsLast)
 
 	def OnFrontConnected(self):
-		user_login = ApiStructure.ReqUserLoginField(BrokerID=self.broker_id, UserID=self.investor_id, Password=self.password)
+		user_login = ApiStructure.ReqUserLoginField(
+			BrokerID=env.broker,
+			UserID=env.investor,
+			Password=env.password,
+		)
 		self.ReqUserLogin(user_login, self.request_id)
 
 	def OnFrontDisconnected(self, nReason):
@@ -41,4 +43,3 @@ class MD(MdApiPy):
 		else:
 			print('user login successfully')
 			print('RspUserLogin:', pRspUserLogin)
-			self.login = True

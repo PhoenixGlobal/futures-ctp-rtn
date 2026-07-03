@@ -1,4 +1,3 @@
-from asyncio import run
 import time
 import env
 from ctp.md import MD
@@ -32,19 +31,14 @@ class PriceListener(MD):
 		print('pRspInfo:', pRspInfo)
 		print('pSpecificInstrument:', pSpecificInstrument)
 
-async def main():
-	md = PriceListener(env.broker, env.investor, env.password, 1)
+def main():
+	md = PriceListener()
 	md.Create()
 	md.RegisterFront(f'tcp://{env.md_server[0]}:{env.md_server[1]}')
 	md.Init()
+	print('trading day:', md.GetTradingDay())
+	md.SubscribeMarketData(['au2608'])
+	time.sleep(3)
+	# md.UnSubscribeMarketData(['au2608'])
 
-	day = md.GetTradingDay()
-	print('trading day:', day)
-	print('md login:', md.login)
-	if md.login:
-		md.SubscribeMarketData(['au2608'])
-		time.sleep(3)
-		md.UnSubscribeMarketData(['au2608'])
-		# md.Join()
-
-run(main())
+main()
