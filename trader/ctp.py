@@ -8,7 +8,7 @@ from . import misc
 
 class Trader(BaseTrader):
 	def __init__(self):
-		def after_login():
+		def after_login(_):
 			misc.log.info('ctp trader logged in')
 		super().__init__(after_login, misc.log_name)
 	
