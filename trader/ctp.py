@@ -1,7 +1,9 @@
 from ctpwrapper import ApiStructure
 from ctp.trader import BaseTrader
 import util
+import env
 from .db import db
+from . import misc
 
 class Trader(BaseTrader):
 	# 期货公司响应
@@ -28,3 +30,24 @@ class Trader(BaseTrader):
 	def OnRtnTrade(self, pTrade) -> None:
 		self.log.info('OnRtnTrade')
 		self.log.info(pTrade)
+
+def init_trader():
+	def after_login():
+		misc.log.info('ctp trader logged in')
+
+	misc.log.info('initing ctp trader')
+	trader = Trader(
+		after_login = after_login,
+		logger = misc.log_name,
+	)
+	trader.Create()
+	ip, port = env.trader_server
+	trader.RegisterFront(f'tcp://{ip}:{port}')
+	trader.SubscribePrivateTopic(
+		1, # 从上次断开后发
+		8888, # SubscribePrivateTopic 未用到这个参数，我瞎写的
+	)
+	trader.Init()
+
+	misc.log.info(f'ctp trader initialized, trading day: {trader.GetTradingDay()}')
+	return trader

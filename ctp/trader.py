@@ -6,7 +6,7 @@ from . import _
 
 class BaseTrader(TraderApiPy):
 	def __init__(self, *,
-		on_login: Callable[[BaseTrader], None],
+		after_login: Callable[[BaseTrader], None],
 		logger: Optional[str] = None,
 	):
 		if logger is None:
@@ -15,7 +15,7 @@ class BaseTrader(TraderApiPy):
 			self.log = logging.getLogger(logger)
 
 		self.request_id = _.req_id_start()
-		self.on_login = on_login
+		self.after_login = after_login
 
 	def req_id(self):
 		id = self.request_id
@@ -75,4 +75,4 @@ class BaseTrader(TraderApiPy):
 		else:
 			self.log.info('trader user login successfully')
 			self.log.info(f'pRspUserLogin: {pRspUserLogin}')
-			self.on_login(self)
+			self.after_login(self)
