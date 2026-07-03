@@ -1,12 +1,14 @@
 from fastapi import FastAPI
-from fastapi.requests import Request
-from .misc import log
+from . import ctp
+from .type import PlaceOrder
 
 app = FastAPI()
 
-@app.get('/order')
-async def place_order(req: Request):
-	print(req.query_params)
-	log.info('test')
-	log.error('errro')
-	return { "message": "hello" }
+@app.post('/order')
+async def place_order(order: PlaceOrder):
+	return _response(
+		ctp.place_order(order)
+	)
+
+def _response(ok: bool):
+	return { 'ok': ok }

@@ -5,7 +5,7 @@ import env
 from . import _
 
 class BaseTrader(TraderApiPy):
-	def __init__(self, *,
+	def __init__(self,
 		after_login: Callable[[BaseTrader], None],
 		logger: Optional[str] = None,
 	):
