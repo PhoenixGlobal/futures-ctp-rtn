@@ -6,10 +6,11 @@ import env
 from . import _
 
 class QPTrader(BaseTrader):
-	def OnRspQryInvestorPosition(self, pInvestorPosition, pRspInfo, nRequestID, bIsLast):
+	def OnRspQryInvestorPosition(self, pos: ApiStructure.InvestorPositionField, pRspInfo, nRequestID, bIsLast):
 		logging.info('当前仓位')
-		logging.info(pInvestorPosition)
-		logging.info(pRspInfo)
+		# logging.info(pInvestorPosition)
+		# logging.info(pRspInfo)
+		logging.info(f'instrument: {pos.InstrumentID}, direction: {pos.PosiDirection}, volume: {pos.Position}')
 		logging.info(f'bIsLast: {bIsLast}')
 
 def trading_day(day: str):
