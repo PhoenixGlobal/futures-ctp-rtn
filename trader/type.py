@@ -2,8 +2,8 @@ from enum import IntEnum
 from pydantic import BaseModel
 
 class Direction(IntEnum):
-	SELL = 0
-	BUY = 1
+	SELL = 1
+	BUY = 0
 
 class Offset(IntEnum):
 	OPEN = 0

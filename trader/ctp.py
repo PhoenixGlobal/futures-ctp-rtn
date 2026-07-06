@@ -28,9 +28,12 @@ class Trader(BaseTrader):
 
 	# 报单插入错误（交易所）
 	def OnErrRtnOrderInsert(self, pInputOrder, pRspInfo):
-		self.log.error('order insert failed')
-		self.log.error(pInputOrder)
-		self.log.error(pRspInfo)
+		self.log.error(f'order insert failed, order: {pInputOrder.OrderRef}')
+		db['OnErrRtnOrderInsert'].insert_one({
+			'data': pInputOrder.to_dict(), # ApiStructure.InputOrderField
+			'error': pRspInfo.to_dict(), # ApiStructure.RspInfoField
+			'timestamp': util.now(),
+		})
 
 	# 成交
 	def OnRtnTrade(self, pTrade) -> None:
@@ -69,7 +72,7 @@ def _new_order(req_id: int, order: PlaceOrder) -> ApiStructure.InputOrderField:
 		UserID = env.investor,
 
 		OrderPriceType = 1, # 1: 市价; 2: 限价
-		# LimitPrice = 891,
+		# LimitPrice = 0,
 		CombHedgeFlag = 1, # 1: 投机;
 		TimeCondition = 1, # 1: 立即成交，否则撤单; 3: 当日有效
 		VolumeCondition = 1, # 1: 任何数量; 2: 最小数量; 3: 最大数量;

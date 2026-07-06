@@ -9,7 +9,7 @@ class PriceListener(MD):
 		"""
 		print('OnRtnDepthMarketData')
 		# print('DepthMarketData:', pDepthMarketData)
-		print(f'bid 1: {pDepthMarketData.BidPrice1}, ask 1: {pDepthMarketData.AskPrice1}')
+		print(f'{pDepthMarketData.InstrumentID} bid 1: {pDepthMarketData.BidPrice1}, ask 1: {pDepthMarketData.AskPrice1}')
 
 	def OnRspSubMarketData(self, pSpecificInstrument, pRspInfo, nRequestID, bIsLast):
 		"""
