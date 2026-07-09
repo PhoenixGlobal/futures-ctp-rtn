@@ -2,7 +2,7 @@ from ctpwrapper import ApiStructure
 from ctp.trader import BaseTrader
 import util
 import env
-from .type import PlaceOrder, Direction, Offset
+from .type import PlaceOrder
 from .db import db
 from . import misc
 
@@ -11,11 +11,17 @@ class Trader(BaseTrader):
 		def after_login(_):
 			misc.log.info('ctp trader logged in')
 		super().__init__(after_login, misc.log_name)
-	
+
 	# 期货公司响应
-	def OnRspOrderInsert(self, pInputOrder, pRspInfo, nRequestID, bIsLast):
-		self.log.info('OnRspOrderInsert')
-		self.log.info(nRequestID)
+	def OnRspOrderInsert(self, pInputOrder: ApiStructure.InputOrderField, pRspInfo: ApiStructure.RspInfoField, nRequestID, bIsLast):
+		self.log.info(f'OnRspOrderInsert (req_id: {nRequestID})')
+		db['RspOrderInsert'].insert_one({
+			'req_id': nRequestID,
+			'data': pInputOrder.to_dict(),
+			'error': pRspInfo.to_dict(),
+			'is_last': bIsLast,
+			'timestamp': util.now(),
+		})
 
 	# 订单实时状态推送
 	def OnRtnOrder(self, pOrder: ApiStructure.OrderField):
@@ -24,7 +30,6 @@ class Trader(BaseTrader):
 			'data': pOrder.to_dict(),
 			'timestamp': util.now(),
 		})
-		self.log.info(f'RtnOrder (req_id: {pOrder.RequestID}) saved')
 
 	# 报单插入错误（交易所）
 	def OnErrRtnOrderInsert(self, pInputOrder, pRspInfo):
@@ -90,4 +95,5 @@ def place_order(order: PlaceOrder):
 	ok = ret == 0
 	if not ok:
 		misc.log.error(f'place order failed, ret: {ret}')
+	misc.log.info('place order ret: 0')
 	return ok
