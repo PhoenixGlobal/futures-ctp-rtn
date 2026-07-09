@@ -19,3 +19,4 @@ class PlaceOrder(BaseModel):
 	direction: Direction
 	offset: Offset
 	volume: int
+	price_limit: float

@@ -32,10 +32,10 @@ class Trader(BaseTrader):
 		})
 
 	# 报单插入错误（交易所）
-	def OnErrRtnOrderInsert(self, pInputOrder, pRspInfo):
-		self.log.error(f'order insert failed, order: {pInputOrder.OrderRef}')
-		db['OnErrRtnOrderInsert'].insert_one({
-			'data': pInputOrder.to_dict(), # ApiStructure.InputOrderField
+	def OnErrRtnOrderInsert(self, input: ApiStructure.InputOrderField, pRspInfo):
+		self.log.error(f'OnErrRtnOrderInsert (req id: {input.RequestID}; order ref: {input.OrderRef})')
+		db['ErrRtnOrderInsert'].insert_one({
+			'data': input.to_dict(), # ApiStructure.InputOrderField
 			'error': pRspInfo.to_dict(), # ApiStructure.RspInfoField
 			'timestamp': util.now(),
 		})
@@ -70,6 +70,7 @@ def _new_order(req_id: int, order: PlaceOrder) -> ApiStructure.InputOrderField:
 		Direction = order.direction.value, # 0: 卖; 1: 买
 		CombOffsetFlag = order.offset.value, # 0: 开仓; 1: 平仓; 3: 平今; 4: 平昨
 		VolumeTotalOriginal = order.volume, # 下单多少手
+		LimitPrice = order.price_limit, # 国君期货：市价单使用限价价格字段作为保护价
 
 		RequestID = req_id,
 		BrokerID = env.broker,
@@ -77,7 +78,6 @@ def _new_order(req_id: int, order: PlaceOrder) -> ApiStructure.InputOrderField:
 		UserID = env.investor,
 
 		OrderPriceType = 1, # 1: 市价; 2: 限价
-		# LimitPrice = 0,
 		CombHedgeFlag = 1, # 1: 投机;
 		TimeCondition = 1, # 1: 立即成交，否则撤单; 3: 当日有效
 		VolumeCondition = 1, # 1: 任何数量; 2: 最小数量; 3: 最大数量;
