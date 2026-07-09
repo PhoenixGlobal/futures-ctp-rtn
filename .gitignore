@@ -1,6 +1,9 @@
 .venv/
 env/
 __pycache__/
+
+/.test.py
+
 DialogRsp.con
 Private.con
 QueryRsp.con

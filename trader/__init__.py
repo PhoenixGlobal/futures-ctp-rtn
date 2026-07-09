@@ -10,5 +10,9 @@ async def place_order(order: PlaceOrder):
 		ctp.place_order(order)
 	)
 
+@app.post('/settlement')
+async def settlement():
+	return _response()
+
 def _response(ok: bool):
 	return { 'ok': ok }
