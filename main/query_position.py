@@ -8,7 +8,7 @@ from . import _
 class QPTrader(BaseTrader):
 	def OnRspQryInvestorPosition(self, pos: ApiStructure.InvestorPositionField, pRspInfo, nRequestID, bIsLast):
 		logging.info('当前仓位')
-		# logging.info(pInvestorPosition)
+		# logging.info(pos)
 		# logging.info(pRspInfo)
 		logging.info(f'instrument: {pos.InstrumentID}, direction: {pos.PosiDirection}, volume: {pos.Position}')
 		logging.info(f'bIsLast: {bIsLast}')
@@ -24,6 +24,7 @@ def on_login(trader: QPTrader):
 		InvestorID = env.investor,
 	)
 	logging.info('querying position')
+	logging.info('!! pos direction: 1 净, 2 多, 3 空')
 	ret = trader.ReqQryInvestorPosition(position, trader.req_id())
 	logging.error(f'position ret: {ret}')
 

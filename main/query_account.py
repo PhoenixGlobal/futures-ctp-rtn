@@ -1,12 +1,11 @@
 import logging
-from datetime import datetime
 from ctp.trader import BaseTrader
 from ctpwrapper import ApiStructure
 import env
 from . import _
 
 class QATrader(BaseTrader):
-	def OnRspQryTradingAccount(self, account: ApiStructure.TradingAccount, pRspInfo, nRequestID, bIsLast):
+	def OnRspQryTradingAccount(self, account: ApiStructure.TradingAccountField, pRspInfo, nRequestID, bIsLast):
 		logging.info('\n\n当前账户')
 		# logging.info(account)
 		logging.info(f'balance: {account.Balance:.2f}')
@@ -21,7 +20,7 @@ def on_login(trader: QATrader):
 	input = ApiStructure.QryTradingAccountField(
 		BrokerID = env.broker,
 		InvestorID = env.investor,
-		BizType = 1,
+		BizType = '1',
 	)
 	ret = trader.ReqQryTradingAccount(input, trader.req_id())
 	logging.error(f'query account ret: {ret}')

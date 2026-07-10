@@ -1,5 +1,4 @@
 import sys
-from typing import Callable
 from ctpwrapper import ApiStructure, MdApiPy
 import env
 

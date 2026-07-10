@@ -3,7 +3,7 @@ from typing import Protocol, Optional
 
 import util
 import env
-from db import db
+from ..db import db
 from .. import misc
 from ..type import PlaceOrder
 

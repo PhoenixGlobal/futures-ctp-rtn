@@ -1,5 +1,5 @@
 from time import sleep
-from typing import Callable
+from typing import Callable, Type
 import logging
 import sys
 from ctp.trader import BaseTrader
@@ -13,7 +13,7 @@ def hold():
 		logging.error('KeyboardInterrupt')
 		sys.exit('KeyboardInterrupt')
 
-def main(Trader: BaseTrader, on_login: Callable[[BaseTrader], None], _hold: bool):
+def main(Trader: Type[BaseTrader], on_login: Callable[[BaseTrader], None], _hold: bool):
 	logging.basicConfig(level=logging.INFO)
 	trader = Trader(on_login)
 	trader.Create()
