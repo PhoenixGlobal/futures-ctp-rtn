@@ -12,9 +12,21 @@ class Trader(BaseTrader):
 	# 报单
 	def OnRtnOrder(self, pOrder):
 		_.save('RtnOrder', pOrder)
+		self.log.info(
+			f'order: {pOrder.OrderRef}; '
+			f'volume: {pOrder.VolumeTotalOriginal}; '
+			f'已成交: {pOrder.VolumeTraded}; '
+			f'未成交: {pOrder.VolumeTotal}; '
+			f'status: {pOrder.OrderStatus}.'
+		)
 	# 成交
 	def OnRtnTrade(self, pTrade) -> None:
 		_.save('RtnTrade', pTrade)
+		self.log.info(
+			f'order {pTrade.OrderRef}; '
+			f'volume: {pTrade.Volume};'
+			f'price: {pTrade.Price}'
+		)
 
 	# 报单 (期货公司)
 	def OnRspOrderInsert(self, pInputOrder, pRspInfo, nRequestID, bIsLast):

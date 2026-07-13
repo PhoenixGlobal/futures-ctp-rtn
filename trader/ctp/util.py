@@ -14,11 +14,10 @@ class DictLike(Protocol):
 def save(
 	coll_name: str,
 	data: DictLike,
-	rsp_info: Optional[DictLike] = None,
+	rsp_info: Optional[ApiStructure.RspInfoField] = None,
 	req_id: int = 0,
 	is_last: Optional[bool] = None,
 ):
-	misc.log.info(f'{coll_name} (req_id: {req_id}; is_last: {is_last})')
 	db[coll_name].insert_one({
 		'data': data.to_dict(),
 		'rsp_info': rsp_info and rsp_info.to_dict(),
@@ -26,6 +25,9 @@ def save(
 		'is_last': is_last,
 		'timestamp': util.sh_now(),
 	})
+	misc.log.info(f'\n{coll_name} (req_id: {req_id}; is_last: {is_last})')
+	if (rsp_info is not None) and (rsp_info.ErrorID != 0):
+		misc.log.error(rsp_info)
 
 def new_order(req_id: int, order: PlaceOrder) -> ApiStructure.InputOrderField:
 	return ApiStructure.InputOrderField(
