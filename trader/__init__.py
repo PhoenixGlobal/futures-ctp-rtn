@@ -1,8 +1,17 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from . import ctp
+from . import ctp, db
 from .type import PlaceOrder
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+	db.mongo_client_one.init()
+	ctp.one.init()
+	yield
+	db.mongo_client_one.clear()
+	ctp.one.clear()
+
+app = FastAPI(lifespan = lifespan)
 
 @app.post('/order')
 async def place_order(order: PlaceOrder):

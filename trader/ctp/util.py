@@ -18,7 +18,7 @@ def save(
 	req_id: int = 0,
 	is_last: Optional[bool] = None,
 ):
-	db[coll_name].insert_one({
+	db()[coll_name].insert_one({
 		'data': data.to_dict(),
 		'rsp_info': rsp_info and rsp_info.to_dict(),
 		'req_id': req_id,
