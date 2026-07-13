@@ -21,7 +21,9 @@ async def place_order(order: PlaceOrder):
 
 @app.post('/settlement')
 async def settlement():
-	return _response()
+	return _response(
+		ctp.settlement()
+	)
 
 def _response(ok: bool):
 	return { 'ok': ok }
