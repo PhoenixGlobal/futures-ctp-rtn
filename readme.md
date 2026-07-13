@@ -1,9 +1,9 @@
-# 期货交易 - Trader
+# 期货交易 - CTP
 
 ``` bash
 source .venv/bin/activate
-fastapi dev # development
-# fastapi run --host 127.0.0.1 # production (生产环境仅允许本地访问)
+# fastapi dev # development
+fastapi run --host 127.0.0.1 # production (生产环境仅允许本地访问)
 ```
 
 ## what, why
