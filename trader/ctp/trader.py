@@ -39,6 +39,14 @@ class Trader(BaseTrader):
 	def OnRspSettlementInfoConfirm(self, result, pRspInfo, nRequestID, bIsLast):
 		_.save('RspSettlementInfoConfirm', result, pRspInfo, nRequestID, bIsLast)
 
+	# 查询仓位
+	def OnRspQryInvestorPosition(self, pos, pRspInfo, nRequestID, bIsLast):
+		_.save('RspQryInvestorPosition', pos, pRspInfo, nRequestID, bIsLast)
+
+	# 查询账户（余额等）
+	def OnRspQryTradingAccount(self, account, pRspInfo, nRequestID, bIsLast):
+		_.save('RspQryTradingAccount', account, pRspInfo, nRequestID, bIsLast)
+
 def init_trader():
 	misc.log.info('initing ctp trader')
 	trader = Trader()
