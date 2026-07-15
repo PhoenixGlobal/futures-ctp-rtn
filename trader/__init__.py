@@ -25,5 +25,17 @@ async def settlement():
 		ctp.settlement()
 	)
 
+@app.post('/query_account')
+async def query_account():
+	return _response(
+		ctp.query_account()
+	)
+
+@app.post('/query_position')
+async def query_position():
+	return _response(
+		ctp.query_position()
+	)
+
 def _response(ok: bool):
 	return { 'ok': ok }
