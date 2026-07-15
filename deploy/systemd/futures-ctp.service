@@ -1,0 +1,12 @@
+[Unit]
+Description=Futures CTP & history
+After=network.target
+
+[Service]
+User=wxf
+WorkingDirectory=
+ExecStart=**work-dir**/.venv/bin/fastapi run --host=127.0.0.1 --port=10003
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
