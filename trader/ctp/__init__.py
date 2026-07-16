@@ -2,7 +2,7 @@ import inspect
 from ctpwrapper import ApiStructure
 import env
 from lib.fommon.one import One
-from ..type import PlaceOrder
+from lib.fommon.api import PlaceOrder
 from .. import misc
 from .trader import init_trader
 from .util import new_order

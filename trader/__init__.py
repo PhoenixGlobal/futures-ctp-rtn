@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from lib.fommon.api import PlaceOrder
 from . import ctp, db
-from .type import PlaceOrder
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):

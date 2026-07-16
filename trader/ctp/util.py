@@ -2,10 +2,10 @@ from ctpwrapper import ApiStructure
 from typing import Protocol, Optional
 
 from lib.fommon import util
+from lib.fommon.api import PlaceOrder
 import env
 from ..db import db
 from .. import misc
-from ..type import PlaceOrder
 
 class DictLike(Protocol):
 	def to_dict(self) -> dict:
