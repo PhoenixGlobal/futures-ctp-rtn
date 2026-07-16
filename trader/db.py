@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 import env
-from util import One
+from lib.fommon.one import One
 
 def _init_client():
 	username, password, host, port = env.mongo

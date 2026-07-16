@@ -2,7 +2,7 @@ import logging
 from typing import Callable, Optional
 from ctpwrapper import ApiStructure, TraderApiPy
 import env
-from . import _
+from . import req_id_start
 
 class BaseTrader(TraderApiPy):
 	def __init__(self,
@@ -14,7 +14,7 @@ class BaseTrader(TraderApiPy):
 		else:
 			self.log = logging.getLogger(logger)
 
-		self.request_id = _.req_id_start()
+		self.request_id = req_id_start()
 		self.after_login = after_login
 
 	def req_id(self):

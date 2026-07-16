@@ -1,7 +1,7 @@
 from ctpwrapper import ApiStructure
 from typing import Protocol, Optional
 
-import util
+from lib.fommon import util
 import env
 from ..db import db
 from .. import misc

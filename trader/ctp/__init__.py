@@ -1,7 +1,7 @@
 import inspect
 from ctpwrapper import ApiStructure
 import env
-from util import One
+from lib.fommon.one import One
 from ..type import PlaceOrder
 from .. import misc
 from .trader import init_trader
