@@ -5,9 +5,10 @@ services:
     restart: always
     ports:
       - "10001:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: 123456
+    command:
+      - mongod
+      - --replSet
+      - random_name_cluster
     volumes:
       - futures-ctp:/data/db
 
