@@ -11,7 +11,7 @@ class Lifecycle(Singleton[MongoClient]):
 		client = MongoClient(conn)
 		return client
 	def _destroy(self, instance: MongoClient):
-		return instance.close()
+		instance.close()
 
 class DB:
 	def __init__(self):
