@@ -1,4 +1,4 @@
-from lib.fommon.util import sh_now
+from lib.fommon import sh_now
 
 # TODO unique request id
 # 起始 request_id: 时-分-00001

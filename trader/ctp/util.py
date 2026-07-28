@@ -1,7 +1,8 @@
+import inspect
 from ctpwrapper import ApiStructure
 from typing import Protocol, Optional
 
-from lib.fommon import util
+from lib.fommon import sh_now
 from lib.fommon.api import PlaceOrder
 import env
 from ..db import db
@@ -18,12 +19,12 @@ def save(
 	req_id: int = 0,
 	is_last: Optional[bool] = None,
 ):
-	db()[coll_name].insert_one({
+	db.insert_one(coll_name, {
 		'data': data.to_dict(),
 		'rsp_info': rsp_info and rsp_info.to_dict(),
 		'req_id': req_id,
 		'is_last': is_last,
-		'timestamp': util.sh_now(),
+		'timestamp': sh_now(),
 	})
 	misc.log.info(f'\n{coll_name} (req_id: {req_id}; is_last: {is_last})')
 	if (rsp_info is not None) and (rsp_info.ErrorID != 0):

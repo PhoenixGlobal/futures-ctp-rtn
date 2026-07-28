@@ -12,3 +12,6 @@ dependencies = [
 
 [tool.fastapi]
 entrypoint = "trader:app"
+
+[tool.pyright]
+typeCheckingMode = "standard"

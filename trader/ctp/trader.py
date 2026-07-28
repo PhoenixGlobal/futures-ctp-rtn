@@ -1,4 +1,3 @@
-import env
 from ctp.trader import BaseTrader
 from trader import misc
 from . import util as _
@@ -32,32 +31,17 @@ class Trader(BaseTrader):
 	def OnRspOrderInsert(self, pInputOrder, pRspInfo, nRequestID, bIsLast):
 		_.save('RspOrderInsert', pInputOrder, pRspInfo, nRequestID, bIsLast)
 	# 报单错误 (交易所)
-	def OnErrRtnOrderInsert(self, input, pRspInfo):
-		_.save('ErrRtnOrderInsert', input, pRspInfo)
+	def OnErrRtnOrderInsert(self, pInputOrder, pRspInfo):
+		_.save('ErrRtnOrderInsert', pInputOrder, pRspInfo)
 
 	# 确认结算单
-	def OnRspSettlementInfoConfirm(self, result, pRspInfo, nRequestID, bIsLast):
-		_.save('RspSettlementInfoConfirm', result, pRspInfo, nRequestID, bIsLast)
+	def OnRspSettlementInfoConfirm(self, pSettlementInfoConfirm, pRspInfo, nRequestID, bIsLast):
+		_.save('RspSettlementInfoConfirm', pSettlementInfoConfirm, pRspInfo, nRequestID, bIsLast)
 
 	# 查询仓位
-	def OnRspQryInvestorPosition(self, pos, pRspInfo, nRequestID, bIsLast):
-		_.save('RspQryInvestorPosition', pos, pRspInfo, nRequestID, bIsLast)
+	def OnRspQryInvestorPosition(self, pInvestorPosition, pRspInfo, nRequestID, bIsLast):
+		_.save('RspQryInvestorPosition', pInvestorPosition, pRspInfo, nRequestID, bIsLast)
 
 	# 查询账户（余额等）
-	def OnRspQryTradingAccount(self, account, pRspInfo, nRequestID, bIsLast):
-		_.save('RspQryTradingAccount', account, pRspInfo, nRequestID, bIsLast)
-
-def init_trader():
-	misc.log.info('initing ctp trader')
-	trader = Trader()
-	trader.Create()
-	ip, port = env.trader_server
-	trader.RegisterFront(f'tcp://{ip}:{port}')
-	trader.SubscribePrivateTopic(
-		1, # 从上次断开后发
-		8888, # SubscribePrivateTopic 未用到这个参数，我瞎写的
-	)
-	trader.Init()
-
-	misc.log.info(f'ctp trader initialized, trading day: {trader.GetTradingDay()}')
-	return trader
+	def OnRspQryTradingAccount(self, pTradingAccount, pRspInfo, nRequestID, bIsLast):
+		_.save('RspQryTradingAccount', pTradingAccount, pRspInfo, nRequestID, bIsLast)

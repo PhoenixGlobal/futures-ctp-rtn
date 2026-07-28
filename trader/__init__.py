@@ -1,15 +1,16 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from lib.fommon.api import PlaceOrder
-from . import ctp, db
+from .db import db
+from .ctp import ctp
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-	db.mongo_client_one.init()
-	ctp.one.init()
+	db.lifecycle.init()
+	ctp.lifecycle.init()
 	yield
-	db.mongo_client_one.clear()
-	ctp.one.clear()
+	db.lifecycle.clear()
+	ctp.lifecycle.clear()
 
 app = FastAPI(lifespan = lifespan)
 
