@@ -34,7 +34,7 @@ def new_order(req_id: int, order: PlaceOrder) -> ApiStructure.InputOrderField:
 	return ApiStructure.InputOrderField(
 		OrderRef = order.order_ref,
 		ExchangeID = order.exchange,
-		InstrumentID = order.instrument,
+		InstrumentID = order.instrument.lower(),
 		Direction = str(order.direction.value), # 0: 卖; 1: 买
 		CombOffsetFlag = str(order.offset.value), # 0: 开仓; 1: 平仓; 3: 平今; 4: 平昨
 		VolumeTotalOriginal = order.volume, # 下单多少手
