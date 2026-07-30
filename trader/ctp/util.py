@@ -32,7 +32,7 @@ def save(
 
 def new_order(req_id: int, order: PlaceOrder) -> ApiStructure.InputOrderField:
 	return ApiStructure.InputOrderField(
-		OrderRef = order.order_id,
+		OrderRef = order.order_ref,
 		ExchangeID = order.exchange,
 		InstrumentID = order.instrument,
 		Direction = str(order.direction.value), # 0: 卖; 1: 买

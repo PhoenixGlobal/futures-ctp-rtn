@@ -24,7 +24,7 @@ class CTP:
 		return self.lifecycle.get()
 
 	def place_order(self, order: PlaceOrder):
-		misc.log.info(f'placing order: {order.order_id}')
+		misc.log.info(f'placing order: {order.order_ref}')
 		req_id = self.t().req_id()
 		input_order = new_order(req_id, order)
 
