@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from lib.fommon.api import PlaceOrder
+from lib.fommon import log
 from .db import db
 from .ctp import ctp
 
@@ -16,6 +17,7 @@ app = FastAPI(lifespan = lifespan)
 
 @app.post('/order')
 async def place_order(order: PlaceOrder):
+	log.inf(f'收到下单命令     {order}')
 	return _response(
 		ctp.place_order(order)
 	)
