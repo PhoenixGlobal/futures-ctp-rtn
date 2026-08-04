@@ -1,11 +1,20 @@
+from ctpwrapper import ApiStructure
 from ctp.trader import BaseTrader
 from trader import misc
 from . import util as _
+import env
+
+def after_login(self: Trader):
+	self.log.info('ctp trader logged in')
+	settlement = ApiStructure.SettlementInfoConfirmField(
+		BrokerID = env.broker,
+		InvestorID = env.investor,
+	)
+	self.log.info('confirming settlement')
+	self.ReqSettlementInfoConfirm(settlement, self.req_id())
 
 class Trader(BaseTrader):
 	def __init__(self):
-		def after_login(_):
-			misc.log.info('ctp trader logged in')
 		super().__init__(after_login, misc.log_name)
 
 	# 报单

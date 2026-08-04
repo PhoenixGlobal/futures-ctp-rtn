@@ -22,11 +22,11 @@ async def place_order(order: PlaceOrder):
 		ctp.place_order(order)
 	)
 
-@app.post('/settlement')
-async def settlement():
-	return _response(
-		ctp.settlement()
-	)
+# @app.post('/settlement')
+# async def settlement():
+# 	return _response(
+# 		ctp.settlement()
+# 	)
 
 @app.post('/query_account')
 async def query_account():
