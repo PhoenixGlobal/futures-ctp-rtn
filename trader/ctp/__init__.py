@@ -27,6 +27,7 @@ class CTP:
 		misc.log.info(f'placing order: {order.order_ref}')
 		req_id = self.t().req_id()
 		input_order = new_order(req_id, order)
+		log.inf(f'正在下单 {input_order}')
 
 		ret = self.t().ReqOrderInsert(input_order, req_id)
 		return ctp_ret(ret)
