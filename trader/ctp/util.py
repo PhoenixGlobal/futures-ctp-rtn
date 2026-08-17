@@ -26,7 +26,7 @@ def save(
 		'is_last': is_last,
 		'timestamp': sh_now(),
 	})
-	misc.log.info(f'\n{coll_name} (req_id: {req_id}; is_last: {is_last})')
+	misc.log.info(f'{coll_name} (req_id: {req_id}; is_last: {is_last})')
 	if (rsp_info is not None) and (rsp_info.ErrorID != 0):
 		misc.log.error(rsp_info)
 
