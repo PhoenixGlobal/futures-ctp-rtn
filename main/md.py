@@ -9,7 +9,7 @@ class PriceListener(MD):
 		"""
 		print('OnRtnDepthMarketData')
 		# print('DepthMarketData:', pDepthMarketData)
-		print(f'{pDepthMarketData.InstrumentID} bid 1: {pDepthMarketData.BidPrice1}, ask 1: {pDepthMarketData.AskPrice1}')
+		print(f'{pDepthMarketData.InstrumentID} ({fix_2(pDepthMarketData.LowerLimitPrice)}, {fix_2(pDepthMarketData.UpperLimitPrice)}) bid 1: {fix_2(pDepthMarketData.BidPrice1)}, ask 1: {fix_2(pDepthMarketData.AskPrice1)}')
 
 	def OnRspSubMarketData(self, pSpecificInstrument, pRspInfo, nRequestID, bIsLast):
 		"""
@@ -31,14 +31,17 @@ class PriceListener(MD):
 		print('pRspInfo:', pRspInfo)
 		print('pSpecificInstrument:', pSpecificInstrument)
 
+def fix_2(price):
+	return round(price, 2)
+
 def main():
 	md = PriceListener()
 	md.Create()
 	md.RegisterFront(f'tcp://{env.md_server[0]}:{env.md_server[1]}')
 	md.Init()
 	print('trading day:', md.GetTradingDay())
-	md.SubscribeMarketData(['au2608'])
+	md.SubscribeMarketData(['au2610'])
 	time.sleep(3)
-	# md.UnSubscribeMarketData(['au2608'])
+	md.UnSubscribeMarketData(['au2608'])
 
 main()
