@@ -1,12 +1,15 @@
-import inspect
 from ctpwrapper import ApiStructure
 from typing import Protocol, Optional
+import httpx
+from fastapi import HTTPException
 
 from lib.fommon import sh_now
-from lib.fommon.api import PlaceOrder
+from lib.fommon.api import Direction, PlaceOrder
 import env
 from ..db import db
 from .. import misc
+
+LIMIT_URL = 'http://127.0.0.1:10003/limit/{instrument}'
 
 class DictLike(Protocol):
 	def to_dict(self) -> dict:
@@ -30,6 +33,24 @@ def save(
 	if (rsp_info is not None) and (rsp_info.ErrorID != 0):
 		misc.log.error(rsp_info)
 
+def fetch_price_limit(instrument: str, direction: Direction) -> float:
+	url = LIMIT_URL.format(instrument=instrument.lower())
+	try:
+		r = httpx.get(url, timeout=3.0)
+		r.raise_for_status()
+		body = r.json()
+	except Exception as e:
+		raise HTTPException(status_code=502, detail=f'获取涨跌停失败: {e}') from e
+	if not body.get('ok') or not isinstance(body.get('data'), dict):
+		raise HTTPException(status_code=502, detail=f'获取涨跌停失败: {body}')
+	data = body['data']
+	key = 'upper' if direction == Direction.BUY else 'lower'
+	price = data.get(key)
+	if price is None:
+		raise HTTPException(status_code=502, detail=f'涨跌停缺少 {key}: {body}')
+	misc.log.info(f'涨跌停 {instrument}: upper={data.get("upper")} lower={data.get("lower")} → LimitPrice={price}')
+	return float(price)
+
 def new_order(req_id: int, order: PlaceOrder) -> ApiStructure.InputOrderField:
 	return ApiStructure.InputOrderField(
 		OrderRef = order.order_ref,
@@ -38,7 +59,7 @@ def new_order(req_id: int, order: PlaceOrder) -> ApiStructure.InputOrderField:
 		Direction = str(order.direction.value), # 0: 卖; 1: 买
 		CombOffsetFlag = str(order.offset.value), # 0: 开仓; 1: 平仓; 3: 平今; 4: 平昨
 		VolumeTotalOriginal = order.volume, # 下单多少手
-		LimitPrice = order.price_limit, # 国君期货：市价单使用限价价格字段作为保护价
+		LimitPrice = fetch_price_limit(order.instrument, order.direction), # 国君期货：市价单使用限价价格字段作为保护价
 
 		RequestID = req_id,
 		BrokerID = str(env.broker),
