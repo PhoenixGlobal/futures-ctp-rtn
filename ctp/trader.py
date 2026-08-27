@@ -1,12 +1,12 @@
 import logging
-from typing import Callable, Optional
+from typing import Callable, Optional, Self
 from ctpwrapper import ApiStructure, TraderApiPy
 import env
 from . import req_id_start
 
 class BaseTrader(TraderApiPy):
 	def __init__(self,
-		after_login: Callable[[BaseTrader], None],
+		after_login: Callable[[Self], None],
 		logger: Optional[str] = None,
 	):
 		if logger is None:
@@ -35,7 +35,7 @@ class BaseTrader(TraderApiPy):
 		self.log.info(f'OnHeartBeatWarning time: {nTimeLapse}')
 
 	def OnFrontDisconnected(self, nReason):
-		self.log.error('FrontDisconnected:', nReason)
+		self.log.error(f'FrontDisconnected: {nReason}')
 
 	def OnFrontConnected(self):
 		self.log.info('FrontConnected')

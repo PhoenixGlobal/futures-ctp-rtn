@@ -4,14 +4,14 @@ from trader import misc
 from . import util as _
 import env
 
-def after_login(self: Trader):
-	self.log.info('ctp trader logged in')
+def after_login(trader: BaseTrader):
+	trader.log.info('ctp trader logged in')
 	settlement = ApiStructure.SettlementInfoConfirmField(
 		BrokerID = env.broker,
 		InvestorID = env.investor,
 	)
-	self.log.info('confirming settlement')
-	self.ReqSettlementInfoConfirm(settlement, self.req_id())
+	trader.log.info('confirming settlement')
+	trader.ReqSettlementInfoConfirm(settlement, trader.req_id())
 
 class Trader(BaseTrader):
 	def __init__(self):
