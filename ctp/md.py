@@ -1,6 +1,6 @@
 import sys
 from ctpwrapper import ApiStructure, MdApiPy
-import env
+from lib.fommon.app_config.read import app_config
 
 class MD(MdApiPy):
 	def __init__(self):
@@ -19,9 +19,9 @@ class MD(MdApiPy):
 
 	def OnFrontConnected(self):
 		user_login = ApiStructure.ReqUserLoginField(
-			BrokerID=env.broker,
-			UserID=env.investor,
-			Password=env.password,
+			BrokerID=app_config['ctp']['broker'],
+			UserID=app_config['ctp']['investor'],
+			Password=app_config['ctp']['password'],
 		)
 		self.ReqUserLogin(user_login, self.request_id)
 

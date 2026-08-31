@@ -1,8 +1,8 @@
 import logging
 from typing import Callable, Optional, Self
 from ctpwrapper import ApiStructure, TraderApiPy
-import env
 from . import req_id_start
+from lib.fommon.app_config.read import app_config
 
 class BaseTrader(TraderApiPy):
 	def __init__(self,
@@ -40,10 +40,10 @@ class BaseTrader(TraderApiPy):
 	def OnFrontConnected(self):
 		self.log.info('FrontConnected')
 		req = ApiStructure.ReqAuthenticateField(
-			BrokerID=env.broker,
-			UserID=env.investor,
-			AppID=env.app_id,
-			AuthCode=env.auth_code,
+			BrokerID=app_config['ctp']['broker'],
+			UserID=app_config['ctp']['investor'],
+			AppID=app_config['ctp']['app_id'],
+			AuthCode=app_config['ctp']['auth_code'],
 		)
 		self.ReqAuthenticate(req, self.req_id())
 
@@ -56,9 +56,9 @@ class BaseTrader(TraderApiPy):
 		if pRspInfo.ErrorID == 0:
 			self.log.info('auth success')
 			req = ApiStructure.ReqUserLoginField(
-				BrokerID = env.broker,
-				UserID = env.investor,
-				Password = env.password,
+				BrokerID = app_config['ctp']['broker'],
+				UserID = app_config['ctp']['investor'],
+				Password = app_config['ctp']['password'],
 			)
 			self.ReqUserLogin(req, self.req_id())
 		else:

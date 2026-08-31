@@ -1,11 +1,11 @@
 import inspect
 from ctpwrapper import ApiStructure
-import env
 from lib.fommon.api import PlaceOrder
 from lib.fommon import log
 from .. import misc
 from .util import new_order
 from .lifecycle import Lifecycle
+from lib.fommon.app_config.read import app_config
 
 def ctp_ret(ret: int):
 	fn_name = inspect.currentframe().f_back.f_code.co_name # type: ignore
@@ -34,8 +34,8 @@ class CTP:
 
 	def settlement(self):
 		settlement = ApiStructure.SettlementInfoConfirmField(
-			BrokerID = env.broker,
-			InvestorID = env.investor,
+			BrokerID = app_config['ctp']['broker'],
+			InvestorID = app_config['ctp']['investor'],
 		)
 		log.inf('confirming settlement')
 		ret = self.t().ReqSettlementInfoConfirm(settlement, self.t().req_id())
@@ -43,8 +43,8 @@ class CTP:
 
 	def query_account(self):
 		input = ApiStructure.QryTradingAccountField(
-			BrokerID = env.broker,
-			InvestorID = env.investor,
+			BrokerID = app_config['ctp']['broker'],
+			InvestorID = app_config['ctp']['investor'],
 			BizType = '1',
 		)
 		ret = self.t().ReqQryTradingAccount(input, self.t().req_id())
@@ -52,8 +52,8 @@ class CTP:
 
 	def query_position(self):
 		position = ApiStructure.QryInvestorPositionField(
-			BrokerID = env.broker,
-			InvestorID = env.investor,
+			BrokerID = app_config['ctp']['broker'],
+			InvestorID = app_config['ctp']['investor'],
 		)
 		ret = self.t().ReqQryInvestorPosition(position, self.t().req_id())
 		return ctp_ret(ret)

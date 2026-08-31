@@ -1,8 +1,8 @@
 import logging
 from ctp.trader import BaseTrader
 from ctpwrapper import ApiStructure
-import env
 from . import _
+from lib.fommon.app_config.read import app_config
 
 class SettlementTrader(BaseTrader):
 	def OnRspSettlementInfoConfirm(self, pSettlementInfoConfirm, pRspInfo, nRequestID, bIsLast):
@@ -22,8 +22,8 @@ def on_login(trader: SettlementTrader):
 	logging.info('futures-trader ONLINE')
 
 	settlement = ApiStructure.SettlementInfoConfirmField(
-		BrokerID = env.broker,
-		InvestorID = env.investor,
+		BrokerID = app_config['ctp']['broker'],
+		InvestorID = app_config['ctp']['investor'],
 	)
 	logging.info('confirming settlement')
 	ret = trader.ReqSettlementInfoConfirm(settlement, trader.req_id())

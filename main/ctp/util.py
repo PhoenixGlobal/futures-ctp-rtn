@@ -5,11 +5,11 @@ from fastapi import HTTPException
 
 from lib.fommon import sh_now
 from lib.fommon.api import Direction, PlaceOrder
-import env
+from lib.fommon.app_config.read import app_config
 from ..db import db
 from .. import misc
 
-LIMIT_URL = 'http://127.0.0.1:10003/limit/{instrument}'
+LIMIT_URL = f'http://127.0.0.1:{app_config['orderbook']['port']}/limit/'
 
 class DictLike(Protocol):
 	def to_dict(self) -> dict:
@@ -34,7 +34,7 @@ def save(
 		misc.log.error(rsp_info)
 
 def fetch_price_limit(instrument: str, direction: Direction) -> float:
-	url = LIMIT_URL.format(instrument=instrument.lower())
+	url = LIMIT_URL + instrument.lower()
 	try:
 		r = httpx.get(url, timeout=3.0)
 		r.raise_for_status()
@@ -62,9 +62,9 @@ def new_order(req_id: int, order: PlaceOrder) -> ApiStructure.InputOrderField:
 		LimitPrice = fetch_price_limit(order.instrument, order.direction), # 国君期货：市价单使用限价价格字段作为保护价
 
 		RequestID = req_id,
-		BrokerID = str(env.broker),
-		InvestorID = env.investor,
-		UserID = env.investor,
+		BrokerID = app_config['ctp']['broker'],
+		InvestorID = app_config['ctp']['investor'],
+		UserID = app_config['ctp']['investor'],
 
 		OrderPriceType = '1', # 1: 市价; 2: 限价
 		CombHedgeFlag = '1', # 1: 投机;

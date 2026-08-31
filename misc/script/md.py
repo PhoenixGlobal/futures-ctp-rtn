@@ -1,6 +1,6 @@
 import time
-import env
 from ctp.md import MD
+from lib.fommon.app_config.read import app_config
 
 class PriceListener(MD):
 	def OnRtnDepthMarketData(self, pDepthMarketData):
@@ -37,7 +37,8 @@ def fix_2(price):
 def main():
 	md = PriceListener()
 	md.Create()
-	md.RegisterFront(f'tcp://{env.md_server[0]}:{env.md_server[1]}')
+	server = app_config['ctp']['market_data_server']
+	md.RegisterFront(f'tcp://{server['ip']}:{server['port']}')
 	md.Init()
 	print('trading day:', md.GetTradingDay())
 	md.SubscribeMarketData(['au2610'])

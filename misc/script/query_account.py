@@ -1,7 +1,7 @@
 import logging
 from ctp.trader import BaseTrader
 from ctpwrapper import ApiStructure
-import env
+from lib.fommon.app_config.read import app_config
 from . import _
 
 class QATrader(BaseTrader):
@@ -18,8 +18,8 @@ def on_login(trader: QATrader):
 	logging.info('querying account')
 
 	input = ApiStructure.QryTradingAccountField(
-		BrokerID = env.broker,
-		InvestorID = env.investor,
+		BrokerID = app_config['ctp']['broker'],
+		InvestorID = app_config['ctp']['investor'],
 		BizType = '1',
 	)
 	ret = trader.ReqQryTradingAccount(input, trader.req_id())

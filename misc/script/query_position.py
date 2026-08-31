@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from ctp.trader import BaseTrader
 from ctpwrapper import ApiStructure
-import env
+from lib.fommon.app_config.read import app_config
 from . import _
 
 class QPTrader(BaseTrader):
@@ -24,8 +24,8 @@ def on_login(trader: QPTrader):
 	logging.info('futures-trader ONLINE')
 
 	position = ApiStructure.QryInvestorPositionField(
-		BrokerID = env.broker,
-		InvestorID = env.investor,
+		BrokerID = app_config['ctp']['broker'],
+		InvestorID = app_config['ctp']['investor'],
 	)
 	logging.info('querying position')
 	logging.info('!! pos direction: 1 净, 2 多, 3 空')

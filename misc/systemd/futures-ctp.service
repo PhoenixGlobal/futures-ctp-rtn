@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 User=wxf
-WorkingDirectory=
-ExecStart=**work-dir**/.venv/bin/fastapi run --host=127.0.0.1 --port=10004
+WorkingDirectory=/home/wxf/workspace/futures-ctp
+ExecStart=/home/wxf/workspace/futures-ctp/.venv/bin/python -m main
 Restart=always
 
 [Install]

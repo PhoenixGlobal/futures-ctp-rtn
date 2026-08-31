@@ -1,14 +1,14 @@
 from ctpwrapper import ApiStructure
 from ctp.trader import BaseTrader
-from trader import misc
+from lib.fommon.app_config.read import app_config
+from .. import misc
 from . import util as _
-import env
 
 def after_login(trader: BaseTrader):
 	trader.log.info('ctp trader logged in')
 	settlement = ApiStructure.SettlementInfoConfirmField(
-		BrokerID = env.broker,
-		InvestorID = env.investor,
+		BrokerID = app_config['ctp']['broker'],
+		InvestorID = app_config['ctp']['investor'],
 	)
 	trader.log.info('confirming settlement')
 	trader.ReqSettlementInfoConfirm(settlement, trader.req_id())

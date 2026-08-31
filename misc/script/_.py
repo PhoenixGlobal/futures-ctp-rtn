@@ -3,7 +3,7 @@ from typing import Callable, Type
 import logging
 import sys
 from ctp.trader import BaseTrader
-import env
+from lib.fommon.app_config.read import app_config
 
 def hold():
 	try:
@@ -17,7 +17,8 @@ def main(Trader: Type[BaseTrader], on_login: Callable[[BaseTrader], None], _hold
 	logging.basicConfig(level=logging.INFO)
 	trader = Trader(on_login)
 	trader.Create()
-	ip, port = env.trader_server
+	server = app_config['ctp']['trade_server']
+	ip, port = server['ip'], server['port']
 	logging.info(f'registering front: {ip}:{port}')
 	trader.RegisterFront(f'tcp://{ip}:{port}')
 	trader.SubscribePrivateTopic(
