@@ -53,7 +53,7 @@ def fetch_price_limit(instrument: str, direction: Direction) -> float:
 
 def new_order(req_id: int, order: PlaceOrder) -> ApiStructure.InputOrderField:
 	return ApiStructure.InputOrderField(
-		OrderRef = order.order_ref,
+		OrderRef = str(order.order_ref),
 		ExchangeID = order.exchange,
 		InstrumentID = order.instrument.lower(),
 		Direction = str(order.direction.value), # 0: 买; 1: 卖

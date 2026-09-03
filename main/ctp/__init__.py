@@ -6,6 +6,7 @@ from .. import misc
 from .util import new_order
 from .lifecycle import Lifecycle
 from lib.fommon.app_config.read import app_config
+from .trader import Trader
 
 def ctp_ret(ret: int):
 	fn_name = inspect.currentframe().f_back.f_code.co_name # type: ignore
@@ -14,20 +15,20 @@ def ctp_ret(ret: int):
 	if not ok:
 		misc.log.error(f'[{fn_name}] failed, ret: {ret}')
 	else:
-		misc.log.info(f'[{fn_name}] succeeded, ret: 0')
+		misc.log.info(f'[{fn_name}] 已送达 CTP, ret: 0')
 	return ok
 
 class CTP:
 	def __init__(self):
 		self.lifecycle = Lifecycle()
-	def t(self):
+	def t(self) -> Trader:
 		return self.lifecycle.get()
 
 	def place_order(self, order: PlaceOrder):
-		misc.log.info(f'placing order: {order.order_ref}')
+		misc.log.info(f'正在下单: {order.order_ref}')
 		req_id = self.t().req_id()
 		input_order = new_order(req_id, order)
-		log.inf(f'正在下单 {input_order}')
+		log.inf(input_order)
 
 		ret = self.t().ReqOrderInsert(input_order, req_id)
 		return ctp_ret(ret)

@@ -1,7 +1,6 @@
 import logging
 from typing import Callable, Optional, Self
 from ctpwrapper import ApiStructure, TraderApiPy
-from . import req_id_start
 from lib.fommon.app_config.read import app_config
 
 class BaseTrader(TraderApiPy):
@@ -14,12 +13,13 @@ class BaseTrader(TraderApiPy):
 		else:
 			self.log = logging.getLogger(logger)
 
-		self.request_id = req_id_start()
+		self.request_id = 1
 		self.after_login = after_login
 
 	def req_id(self):
 		id = self.request_id
 		self.request_id += 1
+		self.log.info(f'new req_id: {id}')
 		return id
 
 	def OnRspError(self, pRspInfo, nRequestID, bIsLast):
@@ -74,5 +74,5 @@ class BaseTrader(TraderApiPy):
 			self.log.error('login failed')
 		else:
 			self.log.info('trader user login successfully')
-			self.log.info(f'pRspUserLogin: {pRspUserLogin}')
+			# self.log.info(f'pRspUserLogin: {pRspUserLogin}')
 			self.after_login(self)
