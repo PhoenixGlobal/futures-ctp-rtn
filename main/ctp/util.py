@@ -9,7 +9,7 @@ from lib.fommon.app_config.read import app_config
 from ..db import db
 from .. import misc
 
-LIMIT_URL = f'http://127.0.0.1:{app_config['orderbook']['port']}/limit/'
+LIMIT_URL = f'http://127.0.0.1:{app_config['md']['port']}/limit/'
 
 class DictLike(Protocol):
 	def to_dict(self) -> dict:
