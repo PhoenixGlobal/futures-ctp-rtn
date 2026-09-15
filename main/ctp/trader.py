@@ -13,6 +13,15 @@ def after_login(trader: BaseTrader):
 	trader.log.info('confirming settlement')
 	trader.ReqSettlementInfoConfirm(settlement, trader.req_id())
 
+	# 查询账户
+	qry_account_input = ApiStructure.QryTradingAccountField(
+		BrokerID = app_config['ctp']['broker'],
+		InvestorID = app_config['ctp']['investor'],
+		BizType = '1',
+	)
+	trader.log.info('querying account')
+	trader.ReqQryTradingAccount(qry_account_input, trader.req_id())
+
 class Trader(BaseTrader):
 	def __init__(self):
 		super().__init__(after_login, misc.log_name)
