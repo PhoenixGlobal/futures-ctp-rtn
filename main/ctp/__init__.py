@@ -1,11 +1,11 @@
 import inspect
 from ctpwrapper import ApiStructure
-from lib.fommon.api import PlaceOrder
-from lib.fommon import log
+from fommon.api import PlaceOrder
+from fommon import log
 from .. import misc
 from .util import new_order
 from .lifecycle import Lifecycle
-from lib.fommon.app_config.read import app_config
+from fommon.app_config.read import app_config
 from .trader import Trader
 
 def ctp_ret(ret: int):

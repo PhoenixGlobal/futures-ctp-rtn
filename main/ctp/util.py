@@ -3,9 +3,9 @@ from typing import Protocol, Optional
 import httpx
 from fastapi import HTTPException
 
-from lib.fommon import sh_now
-from lib.fommon.api import Direction, PlaceOrder
-from lib.fommon.app_config.read import app_config
+from fommon import sh_now
+from fommon.api import Direction, PlaceOrder
+from fommon.app_config.read import app_config
 from ..db import db
 from .. import misc
 

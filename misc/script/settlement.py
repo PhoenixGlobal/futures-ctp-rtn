@@ -2,7 +2,7 @@ import logging
 from ctp.trader import BaseTrader
 from ctpwrapper import ApiStructure
 from . import _
-from lib.fommon.app_config.read import app_config
+from fommon.app_config.read import app_config
 
 class SettlementTrader(BaseTrader):
 	def OnRspSettlementInfoConfirm(self, pSettlementInfoConfirm, pRspInfo, nRequestID, bIsLast):

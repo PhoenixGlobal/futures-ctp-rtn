@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from lib.fommon.api import PlaceOrder
-from lib.fommon import log
+from fommon.api import PlaceOrder
+from fommon import log
 from .db import db
 from .ctp import ctp
 

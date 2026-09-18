@@ -1,6 +1,6 @@
-from lib.fommon.singleton import Singleton
-from lib.fommon.app_config.read import app_config
-from lib.fommon import log
+from fommon.singleton import Singleton
+from fommon.app_config.read import app_config
+from fommon import log
 from .trader import Trader
 
 class Lifecycle(Singleton[Trader]):

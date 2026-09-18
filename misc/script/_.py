@@ -3,7 +3,7 @@ from typing import Callable, Type
 import logging
 import sys
 from ctp.trader import BaseTrader
-from lib.fommon.app_config.read import app_config
+from fommon.app_config.read import app_config
 
 def hold():
 	try:

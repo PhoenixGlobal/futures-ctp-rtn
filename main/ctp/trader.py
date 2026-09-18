@@ -1,6 +1,6 @@
 from ctpwrapper import ApiStructure
 from ctp.trader import BaseTrader
-from lib.fommon.app_config.read import app_config
+from fommon.app_config.read import app_config
 from .. import misc
 from . import util as _
 

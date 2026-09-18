@@ -1,6 +1,6 @@
 import time
 from ctp.md import MD
-from lib.fommon.app_config.read import app_config
+from fommon.app_config.read import app_config
 
 class PriceListener(MD):
 	def OnRtnDepthMarketData(self, pDepthMarketData):

@@ -1,7 +1,7 @@
 import logging
 from typing import Callable, Optional, Self
 from ctpwrapper import ApiStructure, TraderApiPy
-from lib.fommon.app_config.read import app_config
+from fommon.app_config.read import app_config
 
 class BaseTrader(TraderApiPy):
 	def __init__(self,

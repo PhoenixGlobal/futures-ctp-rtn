@@ -1,6 +1,6 @@
 import sys
 from ctpwrapper import ApiStructure, MdApiPy
-from lib.fommon.app_config.read import app_config
+from fommon.app_config.read import app_config
 
 class MD(MdApiPy):
 	def __init__(self):

@@ -1,5 +1,5 @@
 import uvicorn
-from lib.fommon.app_config.read import app_config
+from fommon.app_config.read import app_config
 
 if __name__ == '__main__':
 	config = app_config['trade']

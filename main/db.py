@@ -1,8 +1,8 @@
 from pymongo import MongoClient
 from pymongo.database import Database
-from lib.fommon.singleton import Singleton
-from lib.fommon import log
-from lib.fommon.app_config.const import conn_str, db_name__ctp
+from fommon.singleton import Singleton
+from fommon import log
+from fommon.app_config.const import conn_str, db_name__ctp
 
 class Lifecycle(Singleton[MongoClient]):
 	def _create(self):
