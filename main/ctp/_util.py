@@ -3,13 +3,10 @@ from typing import Protocol, Optional
 import httpx
 from fastapi import HTTPException
 
-from fommon import sh_now
+from fommon import sh_now, log
 from fommon.api import Direction, PlaceOrder
 from fommon.app_config.read import app_config
 from ..db import db
-from .. import misc
-
-LIMIT_URL = f'http://127.0.0.1:{app_config['md']['port']}/limit/'
 
 class DictLike(Protocol):
 	def to_dict(self) -> dict:
@@ -29,12 +26,12 @@ def save(
 		'is_last': is_last,
 		'timestamp': sh_now(),
 	})
-	misc.log.info(f'{coll_name} (req_id: {req_id}; is_last: {is_last})')
+	log.inf(f'{coll_name} (req_id: {req_id}; is_last: {is_last})')
 	if (rsp_info is not None) and (rsp_info.ErrorID != 0):
-		misc.log.error(rsp_info)
+		log.err(rsp_info)
 
 def fetch_price_limit(instrument: str, direction: Direction) -> float:
-	url = LIMIT_URL + instrument.lower()
+	url = f'http://127.0.0.1:{app_config['md']['port']}/price-limit?instrument={instrument.lower()}'
 	try:
 		r = httpx.get(url, timeout=3.0)
 		r.raise_for_status()
@@ -44,11 +41,11 @@ def fetch_price_limit(instrument: str, direction: Direction) -> float:
 	if not body.get('ok') or not isinstance(body.get('data'), dict):
 		raise HTTPException(status_code=502, detail=f'获取涨跌停失败: {body}')
 	data = body['data']
-	key = 'upper' if direction == Direction.BUY else 'lower'
+	key = 'top' if direction == Direction.BUY else 'bottom'
 	price = data.get(key)
 	if price is None:
 		raise HTTPException(status_code=502, detail=f'涨跌停缺少 {key}: {body}')
-	misc.log.info(f'涨跌停 {instrument}: upper={data.get("upper")} lower={data.get("lower")} → LimitPrice={price}')
+	log.inf(f'涨跌停 {instrument}: upper={data.get('top')} lower={data.get('bottom')} → LimitPrice={price}')
 	return float(price)
 
 def new_order(req_id: int, order: PlaceOrder) -> ApiStructure.InputOrderField:
