@@ -4,7 +4,7 @@ from ctpwrapper import ApiStructure
 from ctp.trader import BaseTrader
 from fommon.app_config.read import app_config
 from fommon import log
-from . import _util as _
+from . import util as _
 
 class Trader(BaseTrader):
 	def __init__(self):
