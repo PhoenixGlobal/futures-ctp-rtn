@@ -37,18 +37,6 @@ class Trader(BaseTrader):
 	def OnErrRtnOrderInsert(self, pInputOrder, pRspInfo):
 		_.save('ErrRtnOrderInsert', pInputOrder, pRspInfo)
 
-	# 确认结算单
-	def OnRspSettlementInfoConfirm(self, pSettlementInfoConfirm, pRspInfo, nRequestID, bIsLast):
-		_.save('RspSettlementInfoConfirm', pSettlementInfoConfirm, pRspInfo, nRequestID, bIsLast)
-
-	# 查询仓位
-	def OnRspQryInvestorPosition(self, pInvestorPosition, pRspInfo, nRequestID, bIsLast):
-		_.save('RspQryInvestorPosition', pInvestorPosition, pRspInfo, nRequestID, bIsLast)
-
-	# 查询账户（余额等）
-	def OnRspQryTradingAccount(self, pTradingAccount, pRspInfo, nRequestID, bIsLast):
-		_.save('RspQryTradingAccount', pTradingAccount, pRspInfo, nRequestID, bIsLast)
-
 	def daily_job(self):
 		''' 
 		每日任务:
@@ -56,7 +44,9 @@ class Trader(BaseTrader):
 		2. 查询账户
 		3. 查询仓位
 		'''
+		self.__confirm_settlement()
 
+	def __confirm_settlement(self):
 		log.inf('confirming settlement')
 		settlement = ApiStructure.SettlementInfoConfirmField(
 			BrokerID = app_config['ctp']['broker'],
@@ -64,7 +54,12 @@ class Trader(BaseTrader):
 		)
 		ret = self.ReqSettlementInfoConfirm(settlement, self.req_id())
 		assert ret == 0, f'确认结算单失败: {ret}'
+	# 确认结算单
+	def OnRspSettlementInfoConfirm(self, pSettlementInfoConfirm, pRspInfo, nRequestID, bIsLast):
+		_.save('RspSettlementInfoConfirm', pSettlementInfoConfirm, pRspInfo, nRequestID, bIsLast)
+		self.__query_account()
 
+	def __query_account(self):
 		log.inf('querying account')
 		input = ApiStructure.QryTradingAccountField(
 			BrokerID = app_config['ctp']['broker'],
@@ -73,7 +68,12 @@ class Trader(BaseTrader):
 		)
 		ret = self.ReqQryTradingAccount(input, self.req_id())
 		assert ret == 0, f'查询账户失败: {ret}'
+	# 查询账户（余额等）
+	def OnRspQryTradingAccount(self, pTradingAccount, pRspInfo, nRequestID, bIsLast):
+		_.save('RspQryTradingAccount', pTradingAccount, pRspInfo, nRequestID, bIsLast)
+		self.__query_position()
 
+	def __query_position(self):
 		log.inf('querying position')
 		position = ApiStructure.QryInvestorPositionField(
 			BrokerID = app_config['ctp']['broker'],
@@ -81,6 +81,9 @@ class Trader(BaseTrader):
 		)
 		ret = self.ReqQryInvestorPosition(position, self.req_id())
 		assert ret == 0, f'查询仓位失败: {ret}'
+	# 查询仓位
+	def OnRspQryInvestorPosition(self, pInvestorPosition, pRspInfo, nRequestID, bIsLast):
+		_.save('RspQryInvestorPosition', pInvestorPosition, pRspInfo, nRequestID, bIsLast)
 
 	def place_order(self, order: ApiStructure.InputOrderField):
 		ret = self.ReqOrderInsert(order, order.RequestID)
