@@ -37,14 +37,17 @@ def fetch_price_limit(instrument: str, direction: Direction) -> float:
 		r.raise_for_status()
 		body = r.json()
 	except Exception as e:
-		raise HTTPException(status_code=502, detail=f'获取涨跌停失败: {e}') from e
+		log.err2(f'获取涨跌停失败: {e}')
+		raise HTTPException(status_code=502) from e
 	if not body.get('ok') or not isinstance(body.get('data'), dict):
-		raise HTTPException(status_code=502, detail=f'获取涨跌停失败: {body}')
+		log.err2(f'获取涨跌停失败(invalid body): {body}')
+		raise HTTPException(status_code=502)
 	data = body['data']
 	key = 'top' if direction == Direction.BUY else 'bottom'
 	price = data.get(key)
 	if price is None:
-		raise HTTPException(status_code=502, detail=f'涨跌停缺少 {key}: {body}')
+		log.err2(f'涨跌停缺少 {key}: {body}')
+		raise HTTPException(status_code=502)
 	log.inf(f'涨跌停 {instrument}: upper={data.get('top')} lower={data.get('bottom')} → LimitPrice={price}')
 	return float(price)
 

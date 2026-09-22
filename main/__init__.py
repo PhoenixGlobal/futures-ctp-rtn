@@ -17,7 +17,7 @@ app = FastAPI(lifespan = lifespan)
 
 @app.post('/order')
 async def place_order(order: PlaceOrder):
-	log.inf(f'收到下单命令     {order}')
+	log.inf(f'收到下单命令: {order}')
 	ctp_svc.place_order(order)
 	return _response(True)
 
