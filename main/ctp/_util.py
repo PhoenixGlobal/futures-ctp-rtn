@@ -41,7 +41,7 @@ class PriceLimitResponse(BaseModel):
 	data: PriceLimitData
 
 def fetch_price_limit(instrument: str, direction: Direction) -> float:
-	url = f'http://127.0.0.1:{app_config['md']['port']}/price-limit?instrument={instrument.lower()}'
+	url = f'http://127.0.0.1:{app_config['md']['port']}/price-limit?instrument={instrument}'
 	try:
 		r = httpx.get(url, timeout=3.0)
 		r.raise_for_status()
@@ -65,7 +65,7 @@ def new_order(req_id: int, order: PlaceOrder) -> ApiStructure.InputOrderField:
 	return ApiStructure.InputOrderField(
 		OrderRef = str(order.order_ref),
 		ExchangeID = order.exchange,
-		InstrumentID = order.instrument.lower(),
+		InstrumentID = order.instrument,
 		Direction = str(order.direction.value), # 0: 买; 1: 卖
 		CombOffsetFlag = str(order.offset.value), # 0: 开仓; 1: 平仓; 3: 平今; 4: 平昨
 		VolumeTotalOriginal = order.volume, # 下单多少手
