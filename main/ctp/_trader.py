@@ -1,3 +1,4 @@
+import time
 from typing import Self
 from ctpwrapper import ApiStructure
 from ctp.trader import BaseTrader
@@ -9,6 +10,8 @@ class Trader(BaseTrader):
 	def __init__(self):
 		def after_login(self: Self):
 			self.daily_job()
+			self.__last_daily_job = self.GetTradingDay()
+		self.__last_daily_job = ''
 		super().__init__(after_login)
 
 	# 报单
@@ -44,6 +47,8 @@ class Trader(BaseTrader):
 		2. 查询账户
 		3. 查询仓位
 		'''
+
+		log.inf('开始日常任务')
 		self.__confirm_settlement()
 
 	def __confirm_settlement(self):
@@ -86,5 +91,12 @@ class Trader(BaseTrader):
 		_.save('RspQryInvestorPosition', pInvestorPosition, pRspInfo, nRequestID, bIsLast)
 
 	def place_order(self, order: ApiStructure.InputOrderField):
+		trading_day = self.GetTradingDay()
+		if self.__last_daily_job != trading_day:
+			log.inf('日常任务已过期')
+			self.daily_job()
+			time.sleep(.1)
+			self.__last_daily_job = trading_day
+
 		ret = self.ReqOrderInsert(order, order.RequestID)
 		assert ret == 0, f'下单失败: {ret}'

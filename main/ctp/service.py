@@ -9,6 +9,3 @@ def place_order(order: PlaceOrder):
 	input_order = new_order(ctp_trader.req_id(), order)
 	log.inf(input_order)
 	ctp_trader.place_order(input_order)
-
-def daily_job():
-	ctp_trader.daily_job()
