@@ -2,6 +2,7 @@ from ctpwrapper import ApiStructure
 from typing import Protocol, Optional
 import httpx
 from fastapi import HTTPException
+from pydantic import BaseModel
 
 from fommon import sh_now, log
 from fommon.api import Direction, PlaceOrder
@@ -30,26 +31,35 @@ def save(
 	if (rsp_info is not None) and (rsp_info.ErrorID != 0):
 		log.err(rsp_info)
 
+class PriceLimitData(BaseModel):
+	top: float
+	bottom: float
+	bid: list[tuple[float, int]] # tuple[价格, 数量]
+	ask: list[tuple[float, int]]
+class PriceLimitResponse(BaseModel):
+	ok: bool
+	data: PriceLimitData
+
 def fetch_price_limit(instrument: str, direction: Direction) -> float:
 	url = f'http://127.0.0.1:{app_config['md']['port']}/price-limit?instrument={instrument.lower()}'
 	try:
 		r = httpx.get(url, timeout=3.0)
 		r.raise_for_status()
 		body = r.json()
+		data = PriceLimitResponse.model_validate(body).data
 	except Exception as e:
 		log.err2(f'获取涨跌停失败: {e}')
 		raise HTTPException(status_code=502) from e
-	if not body.get('ok') or not isinstance(body.get('data'), dict):
-		log.err2(f'获取涨跌停失败(invalid body): {body}')
-		raise HTTPException(status_code=502)
-	data = body['data']
-	key = 'top' if direction == Direction.BUY else 'bottom'
-	price = data.get(key)
-	if price is None:
-		log.err2(f'涨跌停缺少 {key}: {body}')
-		raise HTTPException(status_code=502)
-	log.inf(f'涨跌停 {instrument}: upper={data.get('top')} lower={data.get('bottom')} → LimitPrice={price}')
-	return float(price)
+	price = data.top if direction == Direction.BUY else data.bottom
+	log.inf(f'涨跌停({instrument}: {data.bottom:.2f} ~ {data.top:.2f}) → LimitPrice={price:.2f}')
+	__print_orderbook(data)
+	return price
+
+def __print_orderbook(data: PriceLimitData):
+	ask = [f'{p[0]:.2f}x{p[1]}' for p in data.ask]
+	bid = [f'{p[0]:.2f}x{p[1]}' for p in data.bid]
+	log.inf(f'ask: {", ".join(ask)}')
+	log.inf(f'bid: {", ".join(bid)}')
 
 def new_order(req_id: int, order: PlaceOrder) -> ApiStructure.InputOrderField:
 	return ApiStructure.InputOrderField(
