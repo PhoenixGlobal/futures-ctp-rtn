@@ -51,12 +51,16 @@ def fetch_price_limit(instrument: str, direction: Direction) -> float:
 		log.err2(f'获取涨跌停失败: {e}')
 		raise HTTPException(status_code=502) from e
 
-	__print_orderbook(data)
+	# __print_orderbook(data)
 	# log.inf(f'涨跌停({instrument}: {data.bottom:.2f} ~ {data.top:.2f}) → LimitPrice={price:.2f}')
-	limit = data.ask[-1] if direction == Direction.BUY else data.bid[-1]
-	assert limit is not None, '盘口不足，无法获取价格保护'
-	log.inf(f'LimitPrice: {limit[0]:.2f}')
-	return limit[0]
+	limit = data.ask if direction == Direction.BUY else data.bid
+	assert len(limit) == 0, '盘口不足，无法获取价格保护'
+	__print_price_limit(limit)
+	return limit[-1][0]
+
+def __print_price_limit(limit: list[tuple[float, int]]):
+	formatted = [f'{p[0]:.2f}x{p[1]}' for p in limit]
+	log.inf(f'盘口: {formatted} ==> {formatted[-1]}')
 
 def __print_orderbook(data: PriceLimitData):
 	ask = [f'{p[0]:.2f}x{p[1]}' for p in data.ask]
