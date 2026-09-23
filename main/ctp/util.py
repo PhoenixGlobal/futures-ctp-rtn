@@ -50,10 +50,13 @@ def fetch_price_limit(instrument: str, direction: Direction) -> float:
 	except Exception as e:
 		log.err2(f'获取涨跌停失败: {e}')
 		raise HTTPException(status_code=502) from e
-	price = data.top if direction == Direction.BUY else data.bottom
-	log.inf(f'涨跌停({instrument}: {data.bottom:.2f} ~ {data.top:.2f}) → LimitPrice={price:.2f}')
+
 	__print_orderbook(data)
-	return price
+	# log.inf(f'涨跌停({instrument}: {data.bottom:.2f} ~ {data.top:.2f}) → LimitPrice={price:.2f}')
+	limit = data.ask[-1] if direction == Direction.BUY else data.bid[-1]
+	assert limit is not None, '盘口不足，无法获取价格保护'
+	log.inf(f'LimitPrice: {limit[0]:.2f}')
+	return limit[0]
 
 def __print_orderbook(data: PriceLimitData):
 	ask = [f'{p[0]:.2f}x{p[1]}' for p in data.ask]
@@ -76,7 +79,7 @@ def new_order(req_id: int, order: PlaceOrder) -> ApiStructure.InputOrderField:
 		InvestorID = app_config['ctp']['investor'],
 		UserID = app_config['ctp']['investor'],
 
-		OrderPriceType = '1', # 1: 市价; 2: 限价
+		OrderPriceType = '2', # 1: 市价; 2: 限价
 		CombHedgeFlag = '1', # 1: 投机;
 		TimeCondition = '1', # 1: 立即成交，否则撤单; 3: 当日有效
 		VolumeCondition = '1', # 1: 任何数量; 2: 最小数量; 3: 最大数量;
