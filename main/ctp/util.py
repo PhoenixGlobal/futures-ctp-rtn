@@ -54,7 +54,7 @@ def fetch_price_limit(instrument: str, direction: Direction) -> float:
 	# __print_orderbook(data)
 	# log.inf(f'涨跌停({instrument}: {data.bottom:.2f} ~ {data.top:.2f}) → LimitPrice={price:.2f}')
 	limit = data.ask if direction == Direction.BUY else data.bid
-	assert len(limit) == 0, '盘口不足，无法获取价格保护'
+	assert len(limit) == 0, f'盘口不足({instrument})，无法获取价格保护'
 	__print_price_limit(limit)
 	return limit[-1][0]
 
