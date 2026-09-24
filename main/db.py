@@ -21,4 +21,9 @@ class DB:
 	def insert_one(self, coll: str, data: dict):
 		self._()[coll].insert_one(data)
 
+	def get_qry_position(self, req_id: int):
+		return self._()['RspQryInvestorPosition'].find({
+			'req_id': req_id,
+		}).to_list()
+
 db = DB()

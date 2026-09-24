@@ -76,16 +76,18 @@ class Trader(BaseTrader):
 	# 查询账户（余额等）
 	def OnRspQryTradingAccount(self, pTradingAccount, pRspInfo, nRequestID, bIsLast):
 		_.save('RspQryTradingAccount', pTradingAccount, pRspInfo, nRequestID, bIsLast)
-		self.__query_position()
+		self.query_position()
 
-	def __query_position(self):
+	def query_position(self) -> int:
 		log.inf('querying position')
 		position = ApiStructure.QryInvestorPositionField(
 			BrokerID = app_config['ctp']['broker'],
 			InvestorID = app_config['ctp']['investor'],
 		)
-		ret = self.ReqQryInvestorPosition(position, self.req_id())
+		rid = self.req_id()
+		ret = self.ReqQryInvestorPosition(position, rid)
 		assert ret == 0, f'查询仓位失败: {ret}'
+		return rid
 	# 查询仓位
 	def OnRspQryInvestorPosition(self, pInvestorPosition, pRspInfo, nRequestID, bIsLast):
 		_.save('RspQryInvestorPosition', pInvestorPosition, pRspInfo, nRequestID, bIsLast)

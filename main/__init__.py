@@ -1,9 +1,11 @@
+from time import sleep
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fommon.api import PlaceOrder
 from fommon import log, http
 from .db import db
 from .ctp import lifecycle as ctp_lc, util as ctp_util
+from . import util
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -30,3 +32,23 @@ def get_trading_day():
 	return http.respond_success(
 		trader.GetTradingDay()
 	)
+
+@app.get('/position')
+def get_position():
+	rid = trader.query_position()
+	retry = 0
+	while True:
+		if retry > 10:
+			return http.respond_error(f'查询仓位失败, retry_count: {retry}')
+		retry += 1
+
+		log.inf(f'查询仓位(request id: {rid})...')
+		sleep(.2)
+		p_list = db.get_qry_position(rid)
+		if len(p_list) == 0:
+			continue
+		if p_list[-1]['is_last'] == False:
+			continue
+		return http.respond_success(
+			[util.cook_raw_position(p) for p in p_list]
+		)
