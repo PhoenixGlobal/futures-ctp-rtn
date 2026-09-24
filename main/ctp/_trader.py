@@ -79,7 +79,7 @@ class Trader(BaseTrader):
 		self.query_position()
 
 	def query_position(self) -> int:
-		log.inf('querying position')
+		log.inf(f'查询仓位...')
 		position = ApiStructure.QryInvestorPositionField(
 			BrokerID = app_config['ctp']['broker'],
 			InvestorID = app_config['ctp']['investor'],

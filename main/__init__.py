@@ -42,7 +42,6 @@ def get_position():
 			return http.respond_error(f'查询仓位失败, retry_count: {retry}')
 		retry += 1
 
-		log.inf(f'查询仓位(request id: {rid})...')
 		sleep(.2)
 		p_list = db.get_qry_position(rid)
 		if len(p_list) == 0:
