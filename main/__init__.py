@@ -49,6 +49,6 @@ def get_position():
 			continue
 		if p_list[-1]['is_last'] == False:
 			continue
-		return http.respond_success(
-			[util.cook_raw_position(p) for p in p_list]
-		)
+		data = [util.cook_raw_position(p) for p in p_list]
+		log.inf('\n'.join(str(p) for p in data if p.position_date == 'today'))
+		return http.respond_success(data)
