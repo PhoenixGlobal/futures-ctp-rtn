@@ -56,7 +56,13 @@ def fetch_price_limit(instrument: str, direction: Direction) -> float:
 	limit = data.ask if direction == Direction.BUY else data.bid
 	assert len(limit) != 0, f'盘口不足({instrument})，无法获取价格保护'
 	__print_price_limit(limit)
-	return limit[-1][0]
+
+	result = limit[-1][0]
+	if direction == Direction.BUY:
+		result += 0.1
+	else:
+		result -= 0.1
+	return result
 
 def __print_price_limit(limit: list[tuple[float, int]]):
 	formatted = [f'{p[0]:.2f}x{p[1]}' for p in limit]
