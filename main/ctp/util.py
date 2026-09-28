@@ -54,7 +54,11 @@ def fetch_price_limit(instrument: str, direction: Direction) -> float:
 	price = data.top if direction == Direction.BUY else data.bottom
 	log.inf(f'动态价格波动限制({instrument}: {data.bottom:.2f} ~ {data.top:.2f}) → LimitPrice={price:.2f}')
 	__print_orderbook(data)
-	return price
+	# return price
+
+	limit = data.ask if direction == Direction.BUY else data.bid
+	assert len(limit) != 0, '获取价格限制失败，没有对手方'
+	return limit[-1][0]
 
 def __print_orderbook(data: PriceLimitData):
 	ask = [f'{p[0]:.2f}x{p[1]}' for p in data.ask]
