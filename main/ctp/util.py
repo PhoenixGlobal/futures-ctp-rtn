@@ -32,8 +32,10 @@ def save(
 		log.err(rsp_info)
 
 class PriceLimitData(BaseModel):
-	top: float
-	bottom: float
+	upper_limit: float  # 涨停板价格
+	lower_limit: float  # 跌停板价格
+	banding_upper: float  # 动态价格波动上限
+	banding_lower: float  # 动态价格波动下限
 	bid: list[tuple[float, int]] # tuple[价格, 数量]
 	ask: list[tuple[float, int]]
 class PriceLimitResponse(BaseModel):
@@ -51,14 +53,57 @@ def fetch_price_limit(instrument: str, direction: Direction) -> float:
 		log.err2(f'获取涨跌停失败: {e}')
 		raise HTTPException(status_code=502) from e
 
-	price = data.top if direction == Direction.BUY else data.bottom
-	log.inf(f'动态价格波动限制({instrument}: {data.bottom:.2f} ~ {data.top:.2f}) → LimitPrice={price:.2f}')
+	price, source = __protect_price(instrument, data, direction)
+	log.inf(f'保护价({instrument}: {source}) → LimitPrice={price:.2f}')
 	__print_orderbook(data)
-	# return price
+	return price
 
-	limit = data.ask if direction == Direction.BUY else data.bid
-	assert len(limit) != 0, '获取价格限制失败，没有对手方'
-	return limit[-1][0]
+def __product(instrument: str) -> str:
+	i = 0
+	while i < len(instrument) and instrument[i].isalpha():
+		i += 1
+	return instrument[:i]
+
+def __clamp_protect(price: float, data: PriceLimitData, is_buy: bool) -> float:
+	"""报单价必须同时落在涨跌停与动态波动限制（有值时）内。"""
+	if is_buy:
+		price = min(price, data.upper_limit)
+		if data.banding_upper != 0:
+			price = min(price, data.banding_upper)
+	else:
+		price = max(price, data.lower_limit)
+		if data.banding_lower != 0:
+			price = max(price, data.banding_lower)
+	return price
+
+def __protect_price(instrument: str, data: PriceLimitData, direction: Direction) -> tuple[float, str]:
+	"""
+	保护价：先按盘口算激进候选价，最后统一夹紧。
+	涨跌停单独当保护价易撞动态波动限制；banding 行情里常为 0，不能依赖。
+	"""
+	is_buy = direction == Direction.BUY
+	book = data.ask if is_buy else data.bid
+	product = __product(instrument)
+
+	banding = data.banding_upper if is_buy else data.banding_lower
+	if banding != 0:
+		# 有有效 banding 时，取允许范围内最激进价（务必成交）
+		candidate, source = banding, '动态波动限制'
+	elif product in {'IC', 'IM'} and len(book) >= 1:
+		# 中金所股指盘口常只有 1 档：对手价 ±10 tick
+		offset = 10 * 0.2
+		candidate = book[0][0] + (offset if is_buy else -offset)
+		source = f'{product} 第1档±10tick'
+	elif len(book) >= 5:
+		candidate, source = book[4][0], '第5档行情'
+	elif len(book) >= 1:
+		candidate, source = book[-1][0], f'第{len(book)}档行情'
+	else:
+		# 无盘口才退回涨跌停（仍可能被动态限制拒单）
+		candidate = data.upper_limit if is_buy else data.lower_limit
+		source = '涨跌停(无盘口)'
+
+	return __clamp_protect(candidate, data, is_buy), source
 
 def __print_orderbook(data: PriceLimitData):
 	ask = [f'{p[0]:.2f}x{p[1]}' for p in data.ask]
