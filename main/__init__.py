@@ -2,7 +2,7 @@ from time import sleep
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fommon.api import PlaceOrder
-from fommon import log, http
+from fommon import log, http, sh_now
 from .db import db
 from .ctp import lifecycle as ctp_lc, util as ctp_util
 from . import util
@@ -35,6 +35,7 @@ def get_trading_day():
 
 @app.get('/position')
 def get_position():
+	time_limit = sh_now()
 	rid = trader.query_position()
 	retry = 0
 	while True:
@@ -43,11 +44,11 @@ def get_position():
 		retry += 1
 
 		sleep(.2)
-		p_list = db.get_qry_position(rid)
+		p_list = db.get_qry_position(rid, time_limit)
 		if len(p_list) == 0:
 			continue
 		if p_list[-1]['is_last'] == False:
 			continue
 		data = [util.cook_raw_position(p) for p in p_list]
-		log.inf('\n'.join([str(p) for p in data if p.position_date == 'today']))
+		log.inf('\n'.join([str(p) for p in data]))
 		return http.respond_success(data)
