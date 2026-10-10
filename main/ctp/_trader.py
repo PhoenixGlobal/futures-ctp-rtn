@@ -94,3 +94,22 @@ class Trader(BaseTrader):
 
 		ret = self.ReqOrderInsert(order, order.RequestID)
 		assert ret == 0, f'下单失败: {ret}'
+
+	# 监听 "合约状态变化"
+	def OnRtnInstrumentStatus(self, pInstrumentStatus: ApiStructure.InstrumentStatusField):
+		s = pInstrumentStatus
+		status = {
+			'0': '开盘前',
+			'1': '非交易',
+			'2': '连续交易',
+			'3': '集合竞价保单',
+			'4': '集合竞价价格平衡',
+			'5': '集合竞价撮合',
+			'6': '收盘',
+		}[str(s.InstrumentStatus)]
+		reason = {
+			'1': '自动切换',
+			'2': '人工切换',
+			'3': '熔断',
+		}[str(s.EnterReason)]
+		log.inf(f'{s.EnterTime} {s.ExchangeID} {s.InstrumentID} {status} {reason}')
