@@ -5,6 +5,7 @@ from ctp.trader import BaseTrader
 from fommon.app_config.read import app_config
 from fommon import log
 from . import util as _
+from ..util import cook_raw_position
 
 class Trader(BaseTrader):
 	def __init__(self):
@@ -78,6 +79,9 @@ class Trader(BaseTrader):
 	# 查询仓位
 	def OnRspQryInvestorPosition(self, pInvestorPosition, pRspInfo, nRequestID, bIsLast):
 		_.save('RspQryInvestorPosition', pInvestorPosition, pRspInfo, nRequestID, bIsLast)
+		log.inf(cook_raw_position({
+			'data': pInvestorPosition.to_dict(),
+		}))
 
 	def place_order(self, order: ApiStructure.InputOrderField):
 		self.wait_ready_to_trade()

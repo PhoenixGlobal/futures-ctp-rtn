@@ -50,5 +50,4 @@ def get_position():
 		if p_list[-1]['is_last'] == False:
 			continue
 		data = [util.cook_raw_position(p) for p in p_list]
-		log.inf('\n'.join([str(p) for p in data]))
 		return http.respond_success(data)
