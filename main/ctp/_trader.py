@@ -6,6 +6,7 @@ from fommon.app_config.read import app_config
 from fommon import log
 from . import util as _
 from ..util import cook_raw_position
+from ..instrument_status import instrument_status_map
 
 class Trader(BaseTrader):
 	def __init__(self):
@@ -98,6 +99,7 @@ class Trader(BaseTrader):
 	# 监听 "合约状态变化"
 	def OnRtnInstrumentStatus(self, pInstrumentStatus: ApiStructure.InstrumentStatusField):
 		s = pInstrumentStatus
+		status_key = str(s.InstrumentStatus)
 		instrument = str(s.InstrumentID)
 		status = {
 			'0': '开盘前',
@@ -107,7 +109,7 @@ class Trader(BaseTrader):
 			'4': '集合竞价价格平衡',
 			'5': '集合竞价撮合',
 			'6': '收盘',
-		}[str(s.InstrumentStatus)]
+		}[status_key]
 		reason = {
 			'1': '自动切换',
 			'2': '人工切换',
@@ -115,3 +117,7 @@ class Trader(BaseTrader):
 		}[str(s.EnterReason)]
 		if instrument in ['IC', 'IM', 'au']:
 			log.inf(f'{s.EnterTime} {s.ExchangeID} {s.InstrumentID} {status} {reason}')
+			instrument_status_map[instrument] = { # type: ignore
+				'trading': status_key == '2',
+				'reason': reason,
+			}
