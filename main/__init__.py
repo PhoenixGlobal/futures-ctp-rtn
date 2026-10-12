@@ -1,11 +1,13 @@
+import asyncio
 from time import sleep
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fommon.api import PlaceOrder
 from fommon import log, http, sh_now
 from .db import db
 from .ctp import lifecycle as ctp_lc, util as ctp_util
 from . import util
+from . import instrument_status
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -51,3 +53,23 @@ def get_position():
 			continue
 		data = [util.cook_raw_position(p) for p in p_list]
 		return http.respond_success(data)
+
+@app.websocket('/subscribe_instrument_status/{subscriber_name}')
+async def subscribe_instrument_status(websocket: WebSocket, subscriber_name: str):
+	await websocket.accept()
+
+	loop = asyncio.get_running_loop()
+	def push(status: instrument_status.InstrumentStatus):
+		asyncio.run_coroutine_threadsafe(
+			websocket.send_json(status),
+			loop,
+		)
+	log.inf(f'合约交易状态订阅者({subscriber_name})已连接')
+	unsubscribe = instrument_status.subscribe(subscriber_name, push)
+
+	try:
+		while True:
+			await websocket.receive_text()
+	except WebSocketDisconnect:
+		log.inf(f'合约交易状态订阅者({subscriber_name})断开连接')
+		unsubscribe()

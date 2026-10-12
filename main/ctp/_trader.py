@@ -6,7 +6,7 @@ from fommon.app_config.read import app_config
 from fommon import log
 from . import util as _
 from ..util import cook_raw_position
-from ..instrument_status import instrument_status_map
+from ..instrument_status import update_instrument_status
 
 class Trader(BaseTrader):
 	def __init__(self):
@@ -117,7 +117,4 @@ class Trader(BaseTrader):
 		}[str(s.EnterReason)]
 		if instrument in ['IC', 'IM', 'au']:
 			log.inf(f'{s.EnterTime} {s.ExchangeID} {s.InstrumentID} {status} {reason}')
-			instrument_status_map[instrument] = { # type: ignore
-				'trading': status_key == '2',
-				'reason': reason,
-			}
+			update_instrument_status(instrument, status_key, reason)

@@ -9,6 +9,7 @@ dependencies = [
     "fastapi[standard]>=0.139.0",
     "pymongo>=4.17.0",
     "fommon",
+    "websockets",
 ]
 
 [tool.uv.workspace]
