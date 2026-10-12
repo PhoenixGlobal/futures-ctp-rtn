@@ -98,6 +98,7 @@ class Trader(BaseTrader):
 	# 监听 "合约状态变化"
 	def OnRtnInstrumentStatus(self, pInstrumentStatus: ApiStructure.InstrumentStatusField):
 		s = pInstrumentStatus
+		instrument = str(s.InstrumentID)
 		status = {
 			'0': '开盘前',
 			'1': '非交易',
@@ -112,4 +113,5 @@ class Trader(BaseTrader):
 			'2': '人工切换',
 			'3': '熔断',
 		}[str(s.EnterReason)]
-		log.inf(f'{s.EnterTime} {s.ExchangeID} {s.InstrumentID} {status} {reason}')
+		if instrument in ['IC', 'IM', 'au']:
+			log.inf(f'{s.EnterTime} {s.ExchangeID} {s.InstrumentID} {status} {reason}')
