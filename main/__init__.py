@@ -6,6 +6,7 @@ from fommon.api import PlaceOrder
 from fommon import log, http, sh_now
 from .db import db
 from .ctp import lifecycle as ctp_lc, util as ctp_util
+from .patrol import patrol
 from . import util
 from . import instrument_status
 
@@ -13,9 +14,11 @@ from . import instrument_status
 async def lifespan(_: FastAPI):
 	db.lifecycle.init()
 	ctp_lc.init()
+	patrol_task = asyncio.create_task(patrol())
 	yield
 	db.lifecycle.clear()
 	ctp_lc.clear()
+	patrol_task.cancel()
 
 app = FastAPI(lifespan = lifespan)
 trader = ctp_lc.ctp_trader

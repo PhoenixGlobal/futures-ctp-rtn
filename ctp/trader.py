@@ -14,6 +14,12 @@ class BaseTrader(TraderApiPy):
 		self.__initing = False
 		self.__ready_to_trade = False
 
+	def patrol_check(self) -> bool:
+		if self.__ready_to_trade:
+			return True
+		self.__auth()
+		return False
+
 	def wait_ready_to_trade(self):
 		if not self.__connected:
 			raise Exception('CTP 未连接')
