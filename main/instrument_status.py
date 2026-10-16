@@ -18,6 +18,10 @@ def subscribe(subscriber_name: str, callback: Callable[[InstrumentStatus], None]
 	# TODO: 可以在订阅开始时，推送全量数据
 	sub = (subscriber_name, callback)
 	__subscriber_list.add(sub)
+
+	for _, value in __instrument_status_map.items():
+		callback(value) # 连接之后，立即 push
+
 	return lambda: __subscriber_list.remove(sub)
 
 def update_instrument_status(instrument: str, status_key: str, reason: str):
